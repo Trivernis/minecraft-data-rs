@@ -3,6 +3,10 @@ name = "minecraft-data-rs"
 version = "0.1.0"
 authors = ["trivernis <trivernis@protonmail.com>"]
 edition = "2018"
+readme = "README.md"
+license = "MIT"
+description = "A wrapper for minecraft-data"
+repository = "https://github.com/Trivernis/minecraft-data-rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
