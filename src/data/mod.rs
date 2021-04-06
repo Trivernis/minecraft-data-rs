@@ -41,7 +41,6 @@ pub fn get_version_specific_file(version: &Version, filename: &str) -> DataResul
         version.previous_major(),
         version.previous_major_first(),
     ];
-    println!("{:?}", search_folders);
     let mut data = None;
 
     for folder in search_folders {

@@ -33,8 +33,6 @@ pub fn latest_stable() -> DataResult<Version> {
 
 /// Returns a list of available version information
 pub(crate) fn available_versions() -> DataResult<Vec<String>> {
-    Ok(get_common_file(VERSIONS_FILE)?
-        .split_whitespace()
-        .map(|s| s.to_string())
-        .collect())
+    let content = get_common_file(VERSIONS_FILE)?;
+    serde_json::from_str::<Vec<String>>(&*content).map_err(DataError::from)
 }

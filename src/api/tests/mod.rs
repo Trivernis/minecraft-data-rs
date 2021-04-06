@@ -3,6 +3,7 @@ use crate::api::Api;
 use crate::models::version::Version;
 
 mod items;
+mod recipes;
 mod versions;
 
 fn get_api(version: Version) -> Api {

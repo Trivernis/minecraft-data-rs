@@ -1,4 +1,5 @@
 use crate::api::items::Items;
+use crate::api::recipes::Recipes;
 use crate::models::version::Version;
 use std::sync::Arc;
 
@@ -6,11 +7,13 @@ use std::sync::Arc;
 mod tests;
 
 pub mod items;
+mod recipes;
 pub mod versions;
 
 pub struct Api {
-    version: Arc<Version>,
-    items: Items,
+    pub version: Arc<Version>,
+    pub items: Items,
+    pub recipes: Recipes,
 }
 
 impl Api {
@@ -19,6 +22,7 @@ impl Api {
         Self {
             version: Arc::clone(&version),
             items: Items::new(Arc::clone(&version)),
+            recipes: Recipes::new(Arc::clone(&version)),
         }
     }
 }
