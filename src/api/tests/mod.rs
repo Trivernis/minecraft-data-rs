@@ -2,6 +2,7 @@ use crate::api::versions::{available_versions, versions};
 use crate::api::Api;
 use crate::models::version::Version;
 
+mod enchantments;
 mod items;
 mod recipes;
 mod versions;
