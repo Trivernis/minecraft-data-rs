@@ -4,14 +4,16 @@ use crate::api::loot::Loot;
 use crate::api::recipes::Recipes;
 use crate::models::version::Version;
 use std::sync::Arc;
+use crate::api::blocks::Blocks;
 
 #[cfg(test)]
 mod tests;
 
+pub mod blocks;
 pub mod enchantments;
 pub mod items;
-mod loot;
-mod recipes;
+pub mod loot;
+pub mod recipes;
 pub mod versions;
 
 pub struct Api {
@@ -20,6 +22,7 @@ pub struct Api {
     pub recipes: Recipes,
     pub enchantments: Enchantments,
     pub loot: Loot,
+    pub blocks: Blocks,
 }
 
 impl Api {
@@ -31,6 +34,7 @@ impl Api {
             recipes: Recipes::new(Arc::clone(&version)),
             enchantments: Enchantments::new(Arc::clone(&version)),
             loot: Loot::new(Arc::clone(&version)),
+            blocks: Blocks::new(Arc::clone(&version))
         }
     }
 }

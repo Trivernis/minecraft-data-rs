@@ -1,3 +1,4 @@
+pub mod block;
 pub mod block_loot;
 pub mod enchantment;
 pub mod entity_loot;

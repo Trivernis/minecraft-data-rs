@@ -7,6 +7,7 @@ mod items;
 mod loot;
 mod recipes;
 mod versions;
+mod blocks;
 
 fn get_api(version: Version) -> Api {
     Api::new(version)
