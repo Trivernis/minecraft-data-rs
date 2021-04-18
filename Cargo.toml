@@ -1,6 +1,6 @@
 [package]
 name = "minecraft-data-rs"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["trivernis <trivernis@protonmail.com>"]
 edition = "2018"
 readme = "README.md"
