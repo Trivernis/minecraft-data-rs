@@ -13,6 +13,7 @@ pub static BLOCKS_FILE: &str = "blocks";
 pub static COMMANDS_FILE: &str = "commands";
 pub static ENTITIES_FILE: &str = "entities";
 pub static ENTITY_LOOT_FILE: &str = "entityLoot";
+pub static FOODS_FILE: &str = "foods";
 pub static ITEMS_FILE: &str = "items";
 pub static LOGIN_PACKET_FILE: &str = "loginPacket";
 pub static MATERIALS_FILE: &str = "materials";

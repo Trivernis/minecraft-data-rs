@@ -2,12 +2,13 @@ use crate::api::versions::{available_versions, versions};
 use crate::api::Api;
 use crate::models::version::Version;
 
+mod blocks;
 mod enchantments;
+mod foods;
 mod items;
 mod loot;
 mod recipes;
 mod versions;
-mod blocks;
 
 fn get_api(version: Version) -> Api {
     Api::new(version)

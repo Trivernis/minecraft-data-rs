@@ -1,16 +1,18 @@
+use crate::api::blocks::Blocks;
 use crate::api::enchantments::Enchantments;
+use crate::api::foods::Foods;
 use crate::api::items::Items;
 use crate::api::loot::Loot;
 use crate::api::recipes::Recipes;
 use crate::models::version::Version;
 use std::sync::Arc;
-use crate::api::blocks::Blocks;
 
 #[cfg(test)]
 mod tests;
 
 pub mod blocks;
 pub mod enchantments;
+pub mod foods;
 pub mod items;
 pub mod loot;
 pub mod recipes;
@@ -23,6 +25,7 @@ pub struct Api {
     pub enchantments: Enchantments,
     pub loot: Loot,
     pub blocks: Blocks,
+    pub foods: Foods,
 }
 
 impl Api {
@@ -34,7 +37,8 @@ impl Api {
             recipes: Recipes::new(Arc::clone(&version)),
             enchantments: Enchantments::new(Arc::clone(&version)),
             loot: Loot::new(Arc::clone(&version)),
-            blocks: Blocks::new(Arc::clone(&version))
+            blocks: Blocks::new(Arc::clone(&version)),
+            foods: Foods::new(Arc::clone(&version)),
         }
     }
 }
