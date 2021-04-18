@@ -1,6 +1,7 @@
 use crate::api::biomes::Biomes;
 use crate::api::blocks::Blocks;
 use crate::api::enchantments::Enchantments;
+use crate::api::entities::Entities;
 use crate::api::foods::Foods;
 use crate::api::items::Items;
 use crate::api::loot::Loot;
@@ -14,6 +15,7 @@ mod tests;
 pub mod biomes;
 pub mod blocks;
 pub mod enchantments;
+pub mod entities;
 pub mod foods;
 pub mod items;
 pub mod loot;
@@ -29,6 +31,7 @@ pub struct Api {
     pub blocks: Blocks,
     pub foods: Foods,
     pub biomes: Biomes,
+    pub entities: Entities,
 }
 
 impl Api {
@@ -43,6 +46,7 @@ impl Api {
             blocks: Blocks::new(Arc::clone(&version)),
             foods: Foods::new(Arc::clone(&version)),
             biomes: Biomes::new(Arc::clone(&version)),
+            entities: Entities::new(Arc::clone(&version)),
         }
     }
 }

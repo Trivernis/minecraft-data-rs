@@ -5,6 +5,7 @@ use crate::models::version::Version;
 mod biomes;
 mod blocks;
 mod enchantments;
+mod entities;
 mod foods;
 mod items;
 mod loot;

@@ -7,3 +7,4 @@ pub mod food;
 pub mod item;
 pub mod recipe;
 pub mod version;
+pub mod entity;
