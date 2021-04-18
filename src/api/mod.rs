@@ -1,3 +1,4 @@
+use crate::api::biomes::Biomes;
 use crate::api::blocks::Blocks;
 use crate::api::enchantments::Enchantments;
 use crate::api::foods::Foods;
@@ -10,6 +11,7 @@ use std::sync::Arc;
 #[cfg(test)]
 mod tests;
 
+pub mod biomes;
 pub mod blocks;
 pub mod enchantments;
 pub mod foods;
@@ -26,6 +28,7 @@ pub struct Api {
     pub loot: Loot,
     pub blocks: Blocks,
     pub foods: Foods,
+    pub biomes: Biomes,
 }
 
 impl Api {
@@ -39,6 +42,7 @@ impl Api {
             loot: Loot::new(Arc::clone(&version)),
             blocks: Blocks::new(Arc::clone(&version)),
             foods: Foods::new(Arc::clone(&version)),
+            biomes: Biomes::new(Arc::clone(&version)),
         }
     }
 }
