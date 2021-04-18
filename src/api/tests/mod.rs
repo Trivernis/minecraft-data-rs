@@ -4,6 +4,7 @@ use crate::models::version::Version;
 
 mod enchantments;
 mod items;
+mod loot;
 mod recipes;
 mod versions;
 
@@ -17,5 +18,6 @@ fn get_test_versions() -> Vec<Version> {
         .unwrap()
         .into_iter()
         .filter(|v| available.contains(&v.minecraft_version))
+        .filter(|v| v.version >= 477) // datapaths < 1.14 are incomplete
         .collect()
 }

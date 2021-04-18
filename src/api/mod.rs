@@ -1,4 +1,5 @@
 use crate::api::enchantments::Enchantments;
+use crate::api::entity_loot::Loot;
 use crate::api::items::Items;
 use crate::api::recipes::Recipes;
 use crate::models::version::Version;
@@ -8,6 +9,7 @@ use std::sync::Arc;
 mod tests;
 
 pub mod enchantments;
+mod entity_loot;
 pub mod items;
 mod recipes;
 pub mod versions;
@@ -17,6 +19,7 @@ pub struct Api {
     pub items: Items,
     pub recipes: Recipes,
     pub enchantments: Enchantments,
+    pub loot: Loot,
 }
 
 impl Api {
@@ -27,6 +30,7 @@ impl Api {
             items: Items::new(Arc::clone(&version)),
             recipes: Recipes::new(Arc::clone(&version)),
             enchantments: Enchantments::new(Arc::clone(&version)),
+            loot: Loot::new(Arc::clone(&version)),
         }
     }
 }

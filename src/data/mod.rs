@@ -4,7 +4,6 @@ use crate::data::datapaths::Datapaths;
 use crate::models::version::Version;
 use crate::{DataError, DataResult};
 use include_dir::Dir;
-use std::collections::HashMap;
 
 pub static MINECRAFT_DATA: Dir = include_dir::include_dir!("minecraft-data/data");
 
@@ -54,7 +53,7 @@ pub fn get_version_specific_file(version: &Version, filename: &str) -> DataResul
 /// Returns the data path for a given file
 pub fn get_path(version: &Version, filename: &str) -> DataResult<String> {
     lazy_static::lazy_static! {
-         static ref PATHS: Datapaths = getDatapaths().unwrap();
+         static ref PATHS: Datapaths = get_datapaths().unwrap();
     };
     PATHS
         .pc
@@ -66,7 +65,7 @@ pub fn get_path(version: &Version, filename: &str) -> DataResult<String> {
 }
 
 /// Returns the parsed data paths
-fn getDatapaths() -> DataResult<Datapaths> {
+fn get_datapaths() -> DataResult<Datapaths> {
     let content = MINECRAFT_DATA
         .get_file("dataPaths.json")
         .ok_or(DataError::NotFoundError("dataPaths.json".to_string()))?
