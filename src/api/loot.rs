@@ -1,4 +1,5 @@
-use crate::data::{get_version_specific_file, ENTITY_LOOT_FILE};
+use crate::data::{get_version_specific_file, BLOCK_LOOT_FILE, ENTITY_LOOT_FILE};
+use crate::models::block_loot::BlockLoot;
 use crate::models::entity_loot::EntityLoot;
 use crate::models::version::Version;
 use crate::DataResult;
@@ -24,10 +25,26 @@ impl Loot {
         Ok(loot)
     }
 
-    /// Returns the entity loot indexed by name
+    /// Returns the entity loot indexed by entity name
     pub fn entity_loot(&self) -> DataResult<HashMap<String, EntityLoot>> {
         let loot = self.entity_loot_array()?;
         let loot_map = HashMap::from_iter(loot.into_iter().map(|l| (l.entity.clone(), l)));
+
+        Ok(loot_map)
+    }
+
+    /// Returns the block loot in a list
+    pub fn block_loot_array(&self) -> DataResult<Vec<BlockLoot>> {
+        let content = get_version_specific_file(&self.version, BLOCK_LOOT_FILE)?;
+        let loot = serde_json::from_str::<Vec<BlockLoot>>(&content)?;
+
+        Ok(loot)
+    }
+
+    /// Returns the block loot indexed by block name
+    pub fn block_loot(&self) -> DataResult<HashMap<String, BlockLoot>> {
+        let loot = self.block_loot_array()?;
+        let loot_map = HashMap::from_iter(loot.into_iter().map(|l| (l.block.clone(), l)));
 
         Ok(loot_map)
     }

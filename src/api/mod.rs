@@ -1,6 +1,6 @@
 use crate::api::enchantments::Enchantments;
-use crate::api::entity_loot::Loot;
 use crate::api::items::Items;
+use crate::api::loot::Loot;
 use crate::api::recipes::Recipes;
 use crate::models::version::Version;
 use std::sync::Arc;
@@ -9,8 +9,8 @@ use std::sync::Arc;
 mod tests;
 
 pub mod enchantments;
-mod entity_loot;
 pub mod items;
+mod loot;
 mod recipes;
 pub mod versions;
 
