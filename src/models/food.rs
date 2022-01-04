@@ -5,7 +5,7 @@ pub struct Food {
     pub display_name: String,
     pub stack_size: u8,
     pub name: String,
-    pub food_points: u8,
+    pub food_points: f32,
     pub saturation: f32,
     pub effective_quality: f32,
     pub saturation_ratio: f32,

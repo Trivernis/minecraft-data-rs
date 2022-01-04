@@ -10,21 +10,29 @@ pub static MINECRAFT_DATA: Dir = include_dir::include_dir!("minecraft-data/data"
 pub static BIOMES_FILE: &str = "biomes";
 pub static BLOCK_LOOT_FILE: &str = "blockLoot";
 pub static BLOCKS_FILE: &str = "blocks";
+#[allow(unused)]
 pub static COMMANDS_FILE: &str = "commands";
 pub static ENTITIES_FILE: &str = "entities";
 pub static ENTITY_LOOT_FILE: &str = "entityLoot";
 pub static FOODS_FILE: &str = "foods";
 pub static ITEMS_FILE: &str = "items";
+#[allow(unused)]
 pub static LOGIN_PACKET_FILE: &str = "loginPacket";
+#[allow(unused)]
 pub static MATERIALS_FILE: &str = "materials";
+#[allow(unused)]
 pub static PROTOCOL_FILE: &str = "protocol";
 pub static RECIPES_FILE: &str = "recipes";
+#[allow(unused)]
 pub static TINTS_FILE: &str = "tints";
 pub static ENCHANTMENTS_FILE: &str = "enchantments";
 // pub static VERSION_FILE: &str = "version.json";
+#[allow(unused)]
 pub static MAP_ICONS_FILE: &str = "mapIcons";
+#[allow(unused)]
 pub static PARTICLES_FILE: &str = "particles";
 pub static PROTOCOL_VERSIONS_FILE: &str = "protocolVersions";
+#[allow(unused)]
 pub static VERSIONS_FILE: &str = "versions";
 
 /// Returns the string encoded content of the common file

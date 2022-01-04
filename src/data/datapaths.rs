@@ -4,5 +4,5 @@ use std::collections::HashMap;
 #[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
 pub(crate) struct Datapaths {
     pub pc: HashMap<String, HashMap<String, String>>,
-    pub pe: HashMap<String, HashMap<String, String>>,
+    pub bedrock: HashMap<String, HashMap<String, String>>,
 }

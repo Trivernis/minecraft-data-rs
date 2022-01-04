@@ -2,7 +2,6 @@ use crate::data::{get_version_specific_file, BIOMES_FILE};
 use crate::models::biome::Biome;
 use crate::models::version::Version;
 use crate::DataResult;
-use itertools::Itertools;
 use std::collections::HashMap;
 use std::iter::FromIterator;
 use std::sync::Arc;

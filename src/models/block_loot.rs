@@ -10,7 +10,7 @@ pub struct BlockLoot {
 pub struct ItemDrop {
     pub item: String,
     pub drop_chance: f32,
-    pub stack_size_range: [Option<usize>; 2],
+    pub stack_size_range: [Option<isize>; 2],
     pub block_age: Option<usize>,
     pub silk_touch: Option<bool>,
     pub no_silk_touch: Option<bool>,
