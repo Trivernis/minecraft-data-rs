@@ -26,13 +26,13 @@ pub fn versions_by_minecraft_version() -> DataResult<HashMap<String, Version>> {
 /// Returns the latest stable version (hardcoded at the moment)
 pub fn latest_stable() -> DataResult<Version> {
     versions_by_minecraft_version()?
-        .get("1.16.5")
+        .get("1.18.1")
         .cloned()
-        .ok_or(DataError::NotFoundError("1.16.5".to_string()))
+        .ok_or(DataError::NotFoundError("1.18.1".to_string()))
 }
 
 /// Returns a list of available version information
-pub(crate) fn available_versions() -> DataResult<Vec<String>> {
+pub fn available_versions() -> DataResult<Vec<String>> {
     let content = get_common_file(VERSIONS_FILE)?;
     serde_json::from_str::<Vec<String>>(&*content).map_err(DataError::from)
 }
