@@ -19,6 +19,7 @@ pub struct Block {
     pub filter_light: u8,
     pub min_state_id: Option<u32>,
     pub max_state_id: Option<u32>,
+    pub states: Option<Vec<State>>,
     pub default_state: Option<u32>,
     #[serde(alias = "resistance")]
     pub blast_resistance: Option<f32>,
@@ -40,7 +41,8 @@ pub struct Variation {
 }
 
 #[derive(Deserialize, Debug, Clone)]
-#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+// The fields in this part of the schema are not camelCase.
+#[serde(rename_all(serialize = "snake_case"))]
 pub struct State {
     pub name: String,
     #[serde(alias = "type")]
