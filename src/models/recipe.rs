@@ -11,16 +11,16 @@ pub enum Recipe {
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
 pub struct ShapedRecipe {
-    result: RecipeItem,
-    in_shape: Shape,
-    out_shape: Option<Shape>,
+    pub result: RecipeItem,
+    pub in_shape: Shape,
+    pub out_shape: Option<Shape>,
 }
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
 pub struct ShapelessRecipe {
-    result: RecipeItem,
-    ingredients: Vec<RecipeItem>,
+    pub result: RecipeItem,
+    pub ingredients: Vec<RecipeItem>,
 }
 
 pub type Shape = Vec<Vec<RecipeItem>>;
@@ -40,7 +40,7 @@ pub enum RecipeItem {
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
 pub struct IDMetadataCountObject {
-    id: i32,
-    metadata: Option<i32>,
-    count: Option<u32>,
+    pub id: i32,
+    pub metadata: Option<i32>,
+    pub count: Option<u32>,
 }

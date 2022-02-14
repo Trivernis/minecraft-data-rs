@@ -35,9 +35,9 @@ pub enum BoundingBox {
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
 pub struct Variation {
-    metadata: u32,
-    display_name: String,
-    description: Option<String>,
+    pub metadata: u32,
+    pub display_name: String,
+    pub description: Option<String>,
 }
 
 #[derive(Deserialize, Debug, Clone)]
