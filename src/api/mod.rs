@@ -6,7 +6,9 @@ use crate::api::foods::Foods;
 use crate::api::items::Items;
 use crate::api::loot::Loot;
 use crate::api::recipes::Recipes;
+use crate::api::versions::latest_stable;
 use crate::models::version::Version;
+use crate::DataResult;
 use std::sync::Arc;
 
 #[cfg(test)]
@@ -22,6 +24,8 @@ pub mod loot;
 pub mod recipes;
 pub mod versions;
 
+/// A type wrapping access to all the metadata
+/// about the selected minecraft version
 pub struct Api {
     pub version: Arc<Version>,
     pub items: Items,
@@ -35,6 +39,12 @@ pub struct Api {
 }
 
 impl Api {
+    /// Creates a new API wrapper for the latest version
+    pub fn latest() -> DataResult<Self> {
+        Ok(Self::new(latest_stable()?))
+    }
+
+    /// Creates a new API wrapper for the provided version
     pub fn new(version: Version) -> Self {
         let version = Arc::new(version);
         Self {

@@ -1,4 +1,5 @@
 use crate::api::versions::{latest_stable, versions, versions_by_minecraft_version};
+use crate::Api;
 
 #[test]
 fn test_versions() {
@@ -16,5 +17,6 @@ fn test_versions_by_minecraft_version() {
 
 #[test]
 fn test_latest_stable_version() {
-    assert!(latest_stable().is_ok())
+    assert!(latest_stable().is_ok());
+    assert!(Api::latest().is_ok());
 }

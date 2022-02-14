@@ -1,6 +1,7 @@
 use crate::data::{get_common_file, PROTOCOL_VERSIONS_FILE, VERSIONS_FILE};
 use crate::models::version::Version;
 use crate::{DataError, DataResult};
+use itertools::Itertools;
 use std::collections::HashMap;
 use std::iter::FromIterator;
 
@@ -25,10 +26,27 @@ pub fn versions_by_minecraft_version() -> DataResult<HashMap<String, Version>> {
 
 /// Returns the latest stable version (hardcoded at the moment)
 pub fn latest_stable() -> DataResult<Version> {
-    versions_by_minecraft_version()?
-        .get("1.18.1")
-        .cloned()
-        .ok_or(DataError::NotFoundError("1.18.1".to_string()))
+    let latest = versions()?
+        .into_iter()
+        .filter_map(|v| {
+            let version_string = v.minecraft_version.clone();
+            let mut parts = version_string.split(".");
+
+            Some((
+                v,
+                parts.next()?.parse::<u32>().ok()?,
+                parts.next()?.parse::<u32>().ok()?,
+                parts.next().and_then(|p| p.parse::<u32>().ok()),
+            ))
+        })
+        .sorted_by_key(|(_, maj, min, patch)| {
+            format!("{:#05}.{:#05}.{:#05}", maj, min, patch.unwrap_or(0))
+        })
+        .map(|(v, _, _, _)| v)
+        .rev()
+        .next();
+
+    latest.ok_or_else(|| DataError::NotFoundError(String::from("latest version")))
 }
 
 /// Returns a list of available version information
