@@ -20,8 +20,10 @@
 #[macro_use]
 extern crate serde_derive;
 
+/// Provides data access methods
 pub mod api;
 pub(crate) mod data;
+/// Contains the type definitions for the data
 pub mod models;
 pub(crate) mod utils;
 

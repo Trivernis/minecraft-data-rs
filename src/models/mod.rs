@@ -1,10 +1,11 @@
 pub mod biome;
 pub mod block;
+pub mod block_collision_shapes;
 pub mod block_loot;
 pub mod enchantment;
+pub mod entity;
 pub mod entity_loot;
 pub mod food;
 pub mod item;
 pub mod recipe;
 pub mod version;
-pub mod entity;

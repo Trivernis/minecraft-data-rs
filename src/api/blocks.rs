@@ -1,5 +1,6 @@
-use crate::data::{get_version_specific_file, BLOCKS_FILE};
+use crate::data::{get_version_specific_file, BLOCKS_FILE, BLOCK_COLLISION_SHAPES_FILE};
 use crate::models::block::Block;
+use crate::models::block_collision_shapes::BlockCollisionShapes;
 use crate::models::version::Version;
 use crate::DataResult;
 use std::collections::HashMap;
@@ -37,5 +38,13 @@ impl Blocks {
         let blocks_map = HashMap::from_iter(blocks.into_iter().map(|b| (b.name.clone(), b)));
 
         Ok(blocks_map)
+    }
+
+    /// Returns the block collision shapes object
+    pub fn block_collision_shapes(&self) -> DataResult<BlockCollisionShapes> {
+        let content = get_version_specific_file(&self.version, BLOCK_COLLISION_SHAPES_FILE)?;
+        let collision_shapes = serde_json::from_str(&content)?;
+
+        Ok(collision_shapes)
     }
 }

@@ -1,4 +1,5 @@
 use crate::api::tests::{get_api, get_test_versions};
+use crate::models::block_collision_shapes::CollisionShapeIds;
 
 #[test]
 pub fn test_blocks_array() {
@@ -53,6 +54,27 @@ pub fn test_block_states() {
         if let Some(states) = &water.states {
             // Water has states.
             assert_ne!(states.len(), 0);
+        }
+    }
+}
+
+#[test]
+pub fn test_block_collision_states() {
+    for version in get_test_versions() {
+        let api = get_api(version);
+        let shapes = api.blocks.block_collision_shapes().unwrap();
+
+        for (_block, ids) in shapes.blocks {
+            match ids {
+                CollisionShapeIds::Value(id) => {
+                    assert!(shapes.shapes.get(&id).is_some());
+                }
+                CollisionShapeIds::Array(ids) => {
+                    for id in ids {
+                        assert!(shapes.shapes.get(&id).is_some());
+                    }
+                }
+            }
         }
     }
 }

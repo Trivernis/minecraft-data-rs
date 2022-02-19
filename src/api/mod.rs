@@ -14,18 +14,29 @@ use std::sync::Arc;
 #[cfg(test)]
 mod tests;
 
-pub mod biomes;
-pub mod blocks;
-pub mod enchantments;
-pub mod entities;
-pub mod foods;
-pub mod items;
-pub mod loot;
-pub mod recipes;
-pub mod versions;
+mod biomes;
+mod blocks;
+mod enchantments;
+mod entities;
+mod foods;
+mod items;
+mod loot;
+mod recipes;
+mod versions;
+
+pub use biomes::*;
+pub use blocks::*;
+pub use enchantments::*;
+pub use entities::*;
+pub use foods::*;
+pub use items::*;
+pub use loot::*;
+pub use recipes::*;
+pub use versions::*;
 
 /// A type wrapping access to all the metadata
 /// about the selected minecraft version
+#[allow(missing_docs)]
 pub struct Api {
     pub version: Arc<Version>,
     pub items: Items,

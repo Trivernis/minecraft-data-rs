@@ -10,6 +10,7 @@ pub static MINECRAFT_DATA: Dir = include_dir::include_dir!("minecraft-data/data"
 pub static BIOMES_FILE: &str = "biomes";
 pub static BLOCK_LOOT_FILE: &str = "blockLoot";
 pub static BLOCKS_FILE: &str = "blocks";
+pub static BLOCK_COLLISION_SHAPES_FILE: &str = "blockCollisionShapes";
 #[allow(unused)]
 pub static COMMANDS_FILE: &str = "commands";
 pub static ENTITIES_FILE: &str = "entities";

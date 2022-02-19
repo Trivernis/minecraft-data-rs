@@ -1,6 +1,6 @@
 [package]
 name = "minecraft-data-rs"
-version = "0.4.3"
+version = "0.4.4"
 authors = ["trivernis <trivernis@protonmail.com>"]
 edition = "2018"
 readme = "README.md"
@@ -12,10 +12,9 @@ repository = "https://github.com/Trivernis/minecraft-data-rs"
 
 [dependencies]
 thiserror = "1.0.30"
-serde_json = "1.0.74"
-serde_derive = "1.0.133"
-serde = "1.0.133"
+serde_json = "1.0.79"
+serde_derive = "1.0.136"
+serde = "1.0.136"
 include_dir = "0.7.2"
 itertools = "0.10.3"
 lazy_static = "1.4.0"
-schemafy = "0.6.0"

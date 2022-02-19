@@ -24,12 +24,13 @@ pub fn versions_by_minecraft_version() -> DataResult<HashMap<String, Version>> {
     Ok(indexed_versions)
 }
 
-/// Returns the latest stable version (hardcoded at the moment)
+/// Returns the latest stable version for which data paths exists.
+/// Patch versions using the same data path as the major version are ignored.
 pub fn latest_stable() -> DataResult<Version> {
-    let latest = versions()?
+    let latest = available_versions()?
         .into_iter()
         .filter_map(|v| {
-            let version_string = v.minecraft_version.clone();
+            let version_string = v.clone();
             let mut parts = version_string.split(".");
 
             Some((
@@ -43,6 +44,7 @@ pub fn latest_stable() -> DataResult<Version> {
             format!("{:#05}.{:#05}.{:#05}", maj, min, patch.unwrap_or(0))
         })
         .map(|(v, _, _, _)| v)
+        .filter_map(|v| versions_by_minecraft_version().ok()?.remove(&v))
         .rev()
         .next();
 
