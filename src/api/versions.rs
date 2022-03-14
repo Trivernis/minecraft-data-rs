@@ -3,7 +3,6 @@ use crate::models::version::Version;
 use crate::{DataError, DataResult};
 use itertools::Itertools;
 use std::collections::HashMap;
-use std::iter::FromIterator;
 
 /// Returns the unsorted list of versions
 pub fn versions() -> DataResult<Vec<Version>> {
@@ -15,11 +14,10 @@ pub fn versions() -> DataResult<Vec<Version>> {
 
 /// Returns the versions indexed by minecraft version
 pub fn versions_by_minecraft_version() -> DataResult<HashMap<String, Version>> {
-    let indexed_versions = HashMap::from_iter(
-        versions()?
-            .into_iter()
-            .map(|v| (v.minecraft_version.clone(), v)),
-    );
+    let indexed_versions = versions()?
+        .into_iter()
+        .map(|v| (v.minecraft_version.clone(), v))
+        .collect();
 
     Ok(indexed_versions)
 }

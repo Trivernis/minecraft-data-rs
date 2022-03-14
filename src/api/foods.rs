@@ -3,7 +3,6 @@ use crate::models::food::Food;
 use crate::models::version::Version;
 use crate::DataResult;
 use std::collections::HashMap;
-use std::iter::FromIterator;
 use std::sync::Arc;
 
 pub struct Foods {
@@ -26,7 +25,7 @@ impl Foods {
     /// Returns food indexed by id
     pub fn foods(&self) -> DataResult<HashMap<u32, Food>> {
         let foods = self.foods_array()?;
-        let food_map = HashMap::from_iter(foods.into_iter().map(|f| (f.id, f)));
+        let food_map = foods.into_iter().map(|f| (f.id, f)).collect();
 
         Ok(food_map)
     }
@@ -34,7 +33,7 @@ impl Foods {
     /// Returns food indexed by name
     pub fn foods_by_name(&self) -> DataResult<HashMap<String, Food>> {
         let foods = self.foods_array()?;
-        let food_map = HashMap::from_iter(foods.into_iter().map(|f| (f.name.clone(), f)));
+        let food_map = foods.into_iter().map(|f| (f.name.clone(), f)).collect();
 
         Ok(food_map)
     }

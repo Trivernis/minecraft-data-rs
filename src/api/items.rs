@@ -3,7 +3,6 @@ use crate::models::item::Item;
 use crate::models::version::Version;
 use crate::{DataError, DataResult};
 use std::collections::HashMap;
-use std::iter::FromIterator;
 use std::sync::Arc;
 
 /// API to access item information
@@ -25,15 +24,19 @@ impl Items {
 
     /// Returns the items indexed by name
     pub fn items_by_name(&self) -> DataResult<HashMap<String, Item>> {
-        Ok(HashMap::from_iter(
-            self.items_array()?.into_iter().map(|i| (i.name.clone(), i)),
-        ))
+        Ok(self
+            .items_array()?
+            .into_iter()
+            .map(|i| (i.name.clone(), i))
+            .collect())
     }
 
     /// Returns the items indexed by ID
     pub fn items(&self) -> DataResult<HashMap<u32, Item>> {
-        Ok(HashMap::from_iter(
-            self.items_array()?.into_iter().map(|i| (i.id.clone(), i)),
-        ))
+        Ok(self
+            .items_array()?
+            .into_iter()
+            .map(|i| (i.id.clone(), i))
+            .collect())
     }
 }

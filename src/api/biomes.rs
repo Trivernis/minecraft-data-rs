@@ -3,7 +3,6 @@ use crate::models::biome::Biome;
 use crate::models::version::Version;
 use crate::DataResult;
 use std::collections::HashMap;
-use std::iter::FromIterator;
 use std::sync::Arc;
 
 pub struct Biomes {
@@ -26,7 +25,7 @@ impl Biomes {
     /// Returns the biomes indexed by id
     pub fn biomes(&self) -> DataResult<HashMap<u32, Biome>> {
         let biomes = self.biomes_array()?;
-        let biomes_map = HashMap::from_iter(biomes.into_iter().map(|b| (b.id, b)));
+        let biomes_map = biomes.into_iter().map(|b| (b.id, b)).collect();
 
         Ok(biomes_map)
     }
@@ -34,7 +33,7 @@ impl Biomes {
     /// Returns the biomes indexed by name
     pub fn biomes_by_name(&self) -> DataResult<HashMap<String, Biome>> {
         let biomes = self.biomes_array()?;
-        let biomes_map = HashMap::from_iter(biomes.into_iter().map(|b| (b.name.clone(), b)));
+        let biomes_map = biomes.into_iter().map(|b| (b.name.clone(), b)).collect();
 
         Ok(biomes_map)
     }

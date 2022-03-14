@@ -4,7 +4,6 @@ use crate::models::entity_loot::EntityLoot;
 use crate::models::version::Version;
 use crate::DataResult;
 use std::collections::HashMap;
-use std::iter::FromIterator;
 use std::sync::Arc;
 
 /// API to access item information
@@ -28,7 +27,7 @@ impl Loot {
     /// Returns the entity loot indexed by entity name
     pub fn entity_loot(&self) -> DataResult<HashMap<String, EntityLoot>> {
         let loot = self.entity_loot_array()?;
-        let loot_map = HashMap::from_iter(loot.into_iter().map(|l| (l.entity.clone(), l)));
+        let loot_map = loot.into_iter().map(|l| (l.entity.clone(), l)).collect();
 
         Ok(loot_map)
     }
@@ -44,7 +43,7 @@ impl Loot {
     /// Returns the block loot indexed by block name
     pub fn block_loot(&self) -> DataResult<HashMap<String, BlockLoot>> {
         let loot = self.block_loot_array()?;
-        let loot_map = HashMap::from_iter(loot.into_iter().map(|l| (l.block.clone(), l)));
+        let loot_map = loot.into_iter().map(|l| (l.block.clone(), l)).collect();
 
         Ok(loot_map)
     }

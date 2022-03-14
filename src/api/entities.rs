@@ -3,7 +3,6 @@ use crate::models::entity::Entity;
 use crate::models::version::Version;
 use crate::DataResult;
 use std::collections::HashMap;
-use std::iter::FromIterator;
 use std::sync::Arc;
 
 pub struct Entities {
@@ -26,7 +25,7 @@ impl Entities {
     /// Returns entities indexed by name
     pub fn entities_by_name(&self) -> DataResult<HashMap<String, Entity>> {
         let entities = self.entities_array()?;
-        let entities_map = HashMap::from_iter(entities.into_iter().map(|e| (e.name.clone(), e)));
+        let entities_map = entities.into_iter().map(|e| (e.name.clone(), e)).collect();
 
         Ok(entities_map)
     }
@@ -34,7 +33,7 @@ impl Entities {
     /// Returns entities indexed by id
     pub fn entities(&self) -> DataResult<HashMap<u32, Entity>> {
         let entities = self.entities_array()?;
-        let entities_map = HashMap::from_iter(entities.into_iter().map(|e| (e.id, e)));
+        let entities_map = entities.into_iter().map(|e| (e.id, e)).collect();
 
         Ok(entities_map)
     }

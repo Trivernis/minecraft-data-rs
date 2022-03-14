@@ -4,7 +4,6 @@ use crate::models::block_collision_shapes::BlockCollisionShapes;
 use crate::models::version::Version;
 use crate::DataResult;
 use std::collections::HashMap;
-use std::iter::FromIterator;
 use std::sync::Arc;
 
 pub struct Blocks {
@@ -27,7 +26,7 @@ impl Blocks {
     /// Returns the blocks indexed by ID
     pub fn blocks(&self) -> DataResult<HashMap<u32, Block>> {
         let blocks = self.blocks_array()?;
-        let blocks_map = HashMap::from_iter(blocks.into_iter().map(|b| (b.id, b)));
+        let blocks_map = blocks.into_iter().map(|b| (b.id, b)).collect();
 
         Ok(blocks_map)
     }
@@ -35,7 +34,7 @@ impl Blocks {
     /// Returns the blocks indexed by name
     pub fn blocks_by_name(&self) -> DataResult<HashMap<String, Block>> {
         let blocks = self.blocks_array()?;
-        let blocks_map = HashMap::from_iter(blocks.into_iter().map(|b| (b.name.clone(), b)));
+        let blocks_map = blocks.into_iter().map(|b| (b.name.clone(), b)).collect();
 
         Ok(blocks_map)
     }
