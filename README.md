@@ -1,4 +1,4 @@
-# minecraft-data-rs
+# minecraft-data-rs [![](https://img.shields.io/crates/v/minecraft-data-rs)](https://crates.io/crates/minecraft-data-rs) [![](https://img.shields.io/docsrs/minecraft-data-rs)](https://docs.rs/minecraft-data-rs)
 
 This repository is a rust library to access minecraft data.
 The data itself hosted in the [minecraft-data](https://github.com/PrismarineJS/minecraft-data) repository
