@@ -23,6 +23,7 @@ mod items;
 mod loot;
 mod recipes;
 mod versions;
+mod protocol;
 
 pub use biomes::*;
 pub use blocks::*;
@@ -33,6 +34,7 @@ pub use items::*;
 pub use loot::*;
 pub use recipes::*;
 pub use versions::*;
+use crate::api::protocol::Protocol;
 
 /// A type wrapping access to all the metadata
 /// about the selected minecraft version
@@ -47,6 +49,7 @@ pub struct Api {
     pub foods: Foods,
     pub biomes: Biomes,
     pub entities: Entities,
+    pub protocols: Protocol,
 }
 
 impl Api {
@@ -68,6 +71,7 @@ impl Api {
             foods: Foods::new(Arc::clone(&version)),
             biomes: Biomes::new(Arc::clone(&version)),
             entities: Entities::new(Arc::clone(&version)),
+            protocols: Protocol::new(Arc::clone(&version)),
         }
     }
 }

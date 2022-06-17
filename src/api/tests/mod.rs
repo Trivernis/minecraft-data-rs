@@ -11,6 +11,7 @@ mod items;
 mod loot;
 mod recipes;
 mod versions;
+mod protocol;
 
 fn get_api(version: Version) -> Api {
     Api::new(version)

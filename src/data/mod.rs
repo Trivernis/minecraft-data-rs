@@ -21,7 +21,6 @@ pub static ITEMS_FILE: &str = "items";
 pub static LOGIN_PACKET_FILE: &str = "loginPacket";
 #[allow(unused)]
 pub static MATERIALS_FILE: &str = "materials";
-#[allow(unused)]
 pub static PROTOCOL_FILE: &str = "protocol";
 pub static RECIPES_FILE: &str = "recipes";
 #[allow(unused)]
