@@ -4,7 +4,7 @@ use serde_json::Value;
 use std::borrow::{Cow};
 use std::collections::HashMap;
 
-#[derive(Deserialize)]
+#[derive(Deserialize,Debug)]
 pub struct BitField {
     pub name: String,
     pub size: i64,
@@ -14,6 +14,7 @@ pub struct BitField {
 /// These data types should be available in every version.
 /// However, they won't break anything if not present
 /// This can also be known as the Native Types
+#[derive(Debug)]
 pub enum NativeType {
     /// Please read the following link for information on parsing https://wiki.vg/Protocol#VarInt_and_VarLong
     VarInt,
@@ -266,7 +267,7 @@ fn build_inner_type(value: Value) -> Box<PacketDataType> {
         v => Box::new(PacketDataType::Other(String::new(), v)),
     }
 }
-
+#[derive(Debug)]
 pub enum PacketDataType {
     // Just a pure native type
     Native(NativeType),
@@ -308,7 +309,7 @@ impl PacketDataType {
         }
     }
 }
-
+#[derive(Debug)]
 pub struct PacketDataTypes {
     pub types: Vec<PacketDataType>,
 }
