@@ -1,13 +1,14 @@
-use std::collections::HashMap;
-use std::fmt::Formatter;
-use serde::{Deserialize, Deserializer};
 use serde::de::Visitor;
+use serde::{Deserialize, Deserializer};
 use serde_json::Value;
+use std::borrow::{Cow};
+use std::collections::HashMap;
 
+#[derive(Deserialize)]
 pub struct BitField {
-    name: String,
-    size: usize,
-    signed: bool,
+    pub name: String,
+    pub size: i64,
+    pub signed: bool,
 }
 
 /// These data types should be available in every version.
@@ -17,7 +18,7 @@ pub enum NativeType {
     /// Please read the following link for information on parsing https://wiki.vg/Protocol#VarInt_and_VarLong
     VarInt,
     PString {
-        count_type: Box<NativeType>
+        count_type: Box<NativeType>,
     },
     Buffer {
         count_type: Box<NativeType>,
@@ -37,10 +38,10 @@ pub enum NativeType {
     // Optional<MinecraftPacketDataType>
     Option(Box<PacketDataType>),
     EntityMetadataLoop {
-        end_val: i32,
-        metadata_type: Box<NativeType>,
+        end_val: i64,
+        metadata_type: Box<PacketDataType>,
     },
-    TopBitSetTerminatedArray(Box<NativeType>),
+    TopBitSetTerminatedArray(Box<PacketDataType>),
     BitField(Vec<BitField>),
     // A set of Name and The Type
     Container(Vec<(String, Box<PacketDataType>)>),
@@ -61,66 +62,37 @@ pub enum NativeType {
 
 impl NativeType {
     pub fn contains_type(name: &str) -> bool {
-        match name {
-            "varint" => true,
-            "pstring" => true,
-            "buffer" => true,
-            "bool" => true,
-            "u8" => true,
-            "u16" => true,
-            "u32" => true,
-            "u64" => true,
-            "i8" => true,
-            "i16" => true,
-            "i32" => true,
-            "i64" => true,
-            "f32" => true,
-            "f64" => true,
-            "uuid" => true,
-            "option" => true,
-            "entitymetadataloop" => true,
-            "topbitsetterminatedarray" => true,
-            "bitfield" => true,
-            "container" => true,
-            "switch" => true,
-            "void" => true,
-            "array" => true,
-            "restbuffer" => true,
-            "nbt" => true,
-            "optionalnbt" => true,
-            _ => false,
-        }
+        matches!(name, "varint" | "pstring" | "buffer" | "bool" | "u8" | "u16" | "u32" | "u64" | "i8" | "i16" | "i32" | "i64" | "f32" | "f64" | "uuid" | "option" | "entityMetadataLoop" | "topbitsetterminatedarray" | "bitfield" | "container" | "switch" | "void" | "array" | "restbuffer" | "nbt" | "optionalnbt")
     }
-    pub fn new(name: &str, layout: Option<Value>) -> Option<Self> {
+    pub fn new(name: &str, layout: Cow<'_, Value>) -> Option<Self> {
         match name {
             "varint" => Some(NativeType::VarInt),
             "pstring" => {
-                if let Some(layout) = layout {
-                    if let Some(value) = &layout.as_object().unwrap().get("countType") {
-                        if let Some(count_type) = NativeType::new(value.as_str().unwrap(), None) {
-                            Some(NativeType::PString {
+                if let Value::Object(mut obj) = layout.into_owned() {
+                    if let Value::String(count_type) = obj.remove("countType").unwrap_or_default() {
+                        if let Some(count_type) =
+                        NativeType::new(&count_type, Cow::Owned(Value::Null)) {
+                            return Some(NativeType::PString {
                                 count_type: Box::new(count_type),
-                            })
-                        } else {
-                            None
+                            });
                         }
-                    } else {
-                        None
                     }
-                } else {
-                    None
                 }
+                None
             }
             "buffer" => {
-                if let Some(layout) = layout {
-                    if let Some(count_type) = NativeType::new(&layout["countType"].as_str().unwrap(), None) {
-                        Some(NativeType::Buffer {
-                            count_type: Box::new(count_type),
-                        })
-                    } else {
-                        None
+                if let Value::Object(mut obj) = layout.into_owned() {
+                    if let Value::String(count_type) = obj.remove("countType").unwrap_or_default() {
+                        if let Some(count_type) =
+                        NativeType::new(&count_type, Cow::Owned(Value::Null))
+                        {
+                            return Some(NativeType::PString {
+                                count_type: Box::new(count_type),
+                            });
+                        }
                     }
-                } else { None }
+                }
+                None
             }
             "bool" => Some(NativeType::Bool),
             "u8" => Some(NativeType::U8),
@@ -134,137 +106,115 @@ impl NativeType {
             "f32" => Some(NativeType::F32),
             "f64" => Some(NativeType::F64),
             "uuid" => Some(NativeType::Uuid),
-            "option" => {
-                if let Some(layout) = layout {
-                    let option = layout.as_array().unwrap().get(1);
-
-                    if let Some(option_type) = option {
-                        let key = option_type.as_str().unwrap();
-                        let value = PacketDataType::new(key, None).or(Self::new(key, None).and_then(|x| Some(PacketDataType::Native(x))));
-                        Some(NativeType::Option(Box::new(value.unwrap())))
-                    } else {
-                        None
+            "option" => Some(NativeType::Option(build_inner_type(layout.into_owned()))),
+            "entityMetadataLoop" => {
+                match layout.into_owned() {
+                    Value::Object(mut layout) => {
+                        let end_val = layout
+                            .remove("endVal")
+                            .and_then(|v| v.as_i64())
+                            .unwrap_or_default();
+                        let inner_type = layout.remove("type").unwrap_or_default();
+                        let inner_type = build_inner_type(inner_type);
+                        Some(NativeType::EntityMetadataLoop {
+                            end_val,
+                            metadata_type: inner_type,
+                        })
                     }
-                } else {
-                    None
-                }
-            }
-            "entitymetadataloop" => {
-                if let Some(layout) = layout {
-                    if let Some(end_val) = layout["endVal"].as_i64() {
-                        let value1 = layout["type"].as_array().unwrap();
-                        if let Some(metadata_type) = NativeType::new(&value1.get(0).unwrap().to_string(), value1.get(1).cloned()) {
-                            Some(NativeType::EntityMetadataLoop {
-                                end_val: end_val as i32,
-                                metadata_type: Box::new(metadata_type),
-                            })
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
-                    }
-                } else {
-                    None
+                    _ => None,
                 }
             }
             "topbitsetterminatedarray" => {
-                if let Some(layout) = layout {
-                    if let Some(count_type) = NativeType::new(&layout["countType"].as_str().unwrap(), None) {
-                        Some(NativeType::TopBitSetTerminatedArray(Box::new(count_type)))
-                    } else {
-                        None
-                    }
-                } else {
-                    None
+                if let Value::Object(mut layout) = layout.into_owned() {
+                    let inner_type = layout.remove("type").unwrap_or_default();
+                    let inner_type = build_inner_type(inner_type);
+                    return Some(NativeType::TopBitSetTerminatedArray(inner_type));
                 }
+                None
             }
             "bitfield" => {
-                if let Some(layout) = layout {
-                    let bit_fields = layout.as_array().unwrap();
-                    let mut bit_fields_vec = Vec::new();
-                    for bit_field in bit_fields {
-                        if let Some(name) = bit_field["name"].as_str() {
-                            if let Some(size) = bit_field["size"].as_i64() {
-                                if let Some(signed) = bit_field["signed"].as_bool() {
-                                    bit_fields_vec.push(BitField {
-                                        name: name.to_string(),
-                                        size: size as usize,
-                                        signed: signed,
-                                    });
-                                }
-                            }
-                        }
-                    }
+                if let Value::Array(bit_fields) = layout.into_owned() {
+                    let bit_fields_vec = bit_fields
+                        .into_iter()
+                        .map(|v| serde_json::from_value(v).unwrap())
+                        .collect();
+
                     Some(NativeType::BitField(bit_fields_vec))
                 } else {
                     None
                 }
             }
             "container" => {
-                if let Some(layout) = layout {
-                    let containers = layout.as_array().unwrap();
-                    let mut containers_vec = Vec::new();
-                    for container in containers {
-                        if let Some(name) = container["name"].as_str() {
-                            if let Some(type_) = container["type"].as_str() {
-                                containers_vec.push((name.to_string(), Box::new(PacketDataType::new(type_, None).or(Self::new(type_, None).
-                                    and_then(|x| Some(PacketDataType::Native(x)))).unwrap())));
+                if let Value::Array(containers) = layout.into_owned() {
+                    let containers_vec = containers
+                        .into_iter()
+                        .map(|v| {
+                            if let Value::Object(mut obj) = v {
+                                if let Some(name) = obj.remove("name") {
+                                    let name = name.to_string();
+                                    let inner_type = obj.remove("type").unwrap_or_default();
+                                    let inner_type = build_inner_type(inner_type);
+                                    (name, inner_type)
+                                } else {
+                                    let inner_type = obj.remove("type").unwrap_or_default();
+                                    let inner_type = build_inner_type(inner_type);
+                                    (String::new(), inner_type)
+                                }
+                            } else {
+                                panic!("Container is not an object");
                             }
-                        }
-                    }
+                        })
+                        .collect();
+
                     Some(NativeType::Container(containers_vec))
                 } else {
                     None
                 }
             }
+
             "switch" => {
-                if let Some(layout) = layout {
-                    if let Some(name) = layout["compareTo"].as_str() {
-                        if let Some(fields) = layout["fields"].as_object() {
-                            let fields = fields.iter().map(|(key, v)| {
-                                (key.to_string(), v.to_string())
-                            }).collect();
-                            return Some(NativeType::Switch {
-                                compare_to: name.to_string(),
-                                fields: fields,
-                                default: None,
-                            });
-                        }
-                    }
+                if let Value::Object(mut layout) = layout.into_owned() {
+                    return Some(NativeType::Switch {
+                        compare_to: layout.remove("compareTo").unwrap().to_string(),
+                        fields: layout
+                            .remove("fields")
+                            .and_then(|v| {
+                                if let Value::Object(fields) = v {
+                                    Some(
+                                        fields
+                                            .into_iter()
+                                            .map(|(k, v)| (k, v.to_string()))
+                                            .collect(),
+                                    )
+                                } else {
+                                    None
+                                }
+                            })
+                            .unwrap_or_default(),
+                        default: layout.remove("default").map(|v| v.to_string()),
+                    });
                 }
                 None
             }
             "void" => Some(NativeType::Void),
             "array" => {
-                if let Some(layout) = layout {
-                    let value = layout.as_object().unwrap();
-                    if let Some(count_type) = NativeType::new(&value.get("countType").unwrap().as_str().unwrap(), None) {
-                        let type_ = value.get("type").unwrap();
-                         if let Some(type_) = &type_.as_str() {
-                           return Some(NativeType::Array {
-                                count_type: Box::new(count_type),
-                                array_type: Box::new(PacketDataType::new(type_, None).or(Self::new(type_, None).
-                                    and_then(|x| Some(PacketDataType::Native(x)))).unwrap()),
-                            });
-                        } else if let Some(array) = type_.as_array() {
-                             let key = array.get(0).unwrap().as_str().unwrap();
-                             if let Some(inner_type) = PacketDataType::new(key, array.get(1).cloned()).
-                                 or(Self::new(key, array.get(1).cloned()).and_then(|x| Some(PacketDataType::Native(x)))) {
-                               return Some(NativeType::Array {
-                                    count_type: Box::new(count_type),
-                                    array_type: Box::new(inner_type),
-                                });
-                            }else{
-                                 println!("Could not parse array type: {}", key);
-                             }
-
-                        }
-                    }else{
-                        return None;
+                if let Value::Object(mut obj) = layout.into_owned() {
+                    let value = NativeType::new(
+                        obj.remove("countType")
+                            .unwrap_or_default()
+                            .as_str()
+                            .unwrap(),
+                        Cow::Owned(Value::Null),
+                    );
+                    let inner_type = build_inner_type(obj.remove("type").unwrap_or_default());
+                    if let Some(v) = value {
+                        return Some(NativeType::Array {
+                            count_type: Box::new(v),
+                            array_type: inner_type,
+                        });
                     }
                 }
-                return None;
+                None
             }
 
             "restbuffer" => Some(NativeType::RestBuffer),
@@ -272,6 +222,48 @@ impl NativeType {
             "optionalnbt" => Some(NativeType::OptionalNBT),
             _ => None,
         }
+    }
+}
+
+#[inline]
+fn build_inner_type(value: Value) -> Box<PacketDataType> {
+    match value {
+        Value::String(simple_type) => {
+            return if let Some(simple_type) = NativeType::new(&simple_type, Cow::Owned(Value::Null))
+            {
+                Box::new(PacketDataType::Native(simple_type))
+            } else {
+                // Probably a reference to a built type
+                Box::new(PacketDataType::Other(simple_type, Value::Null))
+            };
+        }
+        Value::Array(mut array) => {
+            if array.len() != 2 {
+                return Box::new(PacketDataType::Other(String::new(), Value::Array(array)));
+            }
+            let inner_value = Cow::Owned(array.pop().unwrap_or_default());
+            let key = array.pop().unwrap();
+            if let Value::String(key) = &key {
+                let value = PacketDataType::new(key, Cow::clone(&inner_value)).or_else(|| {
+                    let option = NativeType::new(key, inner_value.clone());
+                    option.map(PacketDataType::Native)
+                });
+                if let Some(value) = value {
+                    Box::new(value)
+                } else {
+                    Box::new(PacketDataType::Other(
+                        key.to_string(),
+                        inner_value.into_owned(),
+                    ))
+                }
+            } else {
+                Box::new(PacketDataType::Other(
+                    key.to_string(),
+                    inner_value.into_owned(),
+                ))
+            }
+        }
+        v => Box::new(PacketDataType::Other(String::new(), v)),
     }
 }
 
@@ -287,29 +279,29 @@ pub enum PacketDataType {
 }
 
 impl PacketDataType {
-    pub fn new(key: &str, value: Option<Value>) -> Option<Self> {
-        if !NativeType::contains_type(&key) {
-            let value = value.unwrap_or_default();
-            if value.is_string() {
-                Some(PacketDataType::UnknownNativeType(key.to_string()))
-            } else if let Some(array) = value.as_array() {
-                if let Some(name) = array.get(0) {
-                    if let Some(name) = name.as_str() {
-                        let option = value.get(1).cloned();
-                        let other_type = NativeType::new(&name, option.clone());
-                        if let Some(type_) = other_type {
+    pub fn new(key: &str, value: Cow<'_, Value>) -> Option<Self> {
+        if !NativeType::contains_type(key) {
+            match value.into_owned() {
+                Value::String(string) => Some(PacketDataType::UnknownNativeType(string)),
+                Value::Array(mut array) => {
+                    if array.len() != 2 {
+                        return Some(PacketDataType::Other(key.to_string(), Value::Array(array)));
+                    }
+
+                    let inner_type_values = array.pop().unwrap_or_default();
+                    let inner_type_name = array.pop().unwrap();
+                    if let Value::String(inner_type_name) = inner_type_name {
+                        return if let Some(type_) =
+                        NativeType::new(&inner_type_name, Cow::Borrowed(&inner_type_values))
+                        {
                             Some(PacketDataType::Built(type_))
                         } else {
-                            Some(PacketDataType::Other(name.to_string(), option.unwrap_or_default()))
-                        }
-                    } else {
-                        Some(PacketDataType::Other(key.to_string(), value))
+                            Some(PacketDataType::Other(inner_type_name, inner_type_values))
+                        };
                     }
-                } else {
                     None
                 }
-            } else {
-                Some(PacketDataType::Other(key.to_string(), value))
+                _ => None,
             }
         } else {
             None
@@ -323,7 +315,7 @@ pub struct PacketDataTypes {
 
 use std::fmt;
 
-use serde::de::{self, SeqAccess, MapAccess};
+use serde::de::{MapAccess};
 
 impl<'de> Deserialize<'de> for PacketDataTypes {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -339,7 +331,6 @@ impl<'de> Deserialize<'de> for PacketDataTypes {
                 formatter.write_str("struct PacketDataTypes")
             }
 
-
             fn visit_map<V>(self, mut map: V) -> Result<PacketDataTypes, V::Error>
                 where
                     V: MapAccess<'de>,
@@ -347,7 +338,7 @@ impl<'de> Deserialize<'de> for PacketDataTypes {
                 let mut types = Vec::new();
                 while let Some(key) = map.next_key::<String>()? {
                     let value = map.next_value::<Value>()?;
-                    if let Some(ty) = PacketDataType::new(&key, Some(value)) {
+                    if let Some(ty) = PacketDataType::new(&key, Cow::Owned(value)) {
                         types.push(ty);
                     }
                 }

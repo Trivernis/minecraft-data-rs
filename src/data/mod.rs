@@ -39,9 +39,9 @@ pub static VERSIONS_FILE: &str = "versions";
 pub fn get_common_file(filename: &str) -> DataResult<String> {
     MINECRAFT_DATA
         .get_file(format!("pc/common/{}.json", filename))
-        .ok_or(DataError::NotFoundError(filename.to_string()))?
+        .ok_or_else(||DataError::NotFoundError(filename.to_string()))?
         .contents_utf8()
-        .ok_or(DataError::InvalidEncodingError(filename.to_string()))
+        .ok_or_else(||DataError::InvalidEncodingError(filename.to_string()))
         .map(|d| d.to_string())
 }
 
@@ -50,12 +50,12 @@ pub fn get_version_specific_file(version: &Version, filename: &str) -> DataResul
     let path = get_path(version, filename)?;
     MINECRAFT_DATA
         .get_file(format!("{}/{}.json", path, filename))
-        .ok_or(DataError::NotFoundError(format!(
+        .ok_or_else(||DataError::NotFoundError(format!(
             "{}/{}",
             version.minecraft_version, filename
         )))?
         .contents_utf8()
-        .ok_or(DataError::InvalidEncodingError(filename.to_string()))
+        .ok_or_else(||DataError::InvalidEncodingError(filename.to_string()))
         .map(|d| d.to_string())
 }
 
@@ -67,19 +67,19 @@ pub fn get_path(version: &Version, filename: &str) -> DataResult<String> {
     PATHS
         .pc
         .get(&version.minecraft_version)
-        .ok_or(DataError::NotFoundError(version.minecraft_version.clone()))?
+        .ok_or_else(||DataError::NotFoundError(version.minecraft_version.clone()))?
         .get(filename)
         .cloned()
-        .ok_or(DataError::NotFoundError(filename.to_string()))
+        .ok_or_else(||DataError::NotFoundError(filename.to_string()))
 }
 
 /// Returns the parsed data paths
 fn get_datapaths() -> DataResult<Datapaths> {
     let content = MINECRAFT_DATA
         .get_file("dataPaths.json")
-        .ok_or(DataError::NotFoundError("dataPaths.json".to_string()))?
+        .ok_or_else(||DataError::NotFoundError("dataPaths.json".to_string()))?
         .contents_utf8()
-        .ok_or(DataError::InvalidEncodingError(
+        .ok_or_else(||DataError::InvalidEncodingError(
             "dataPaths.json".to_string(),
         ))?;
     serde_json::from_str::<Datapaths>(content).map_err(DataError::from)

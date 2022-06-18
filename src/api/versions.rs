@@ -29,7 +29,7 @@ pub fn latest_stable() -> DataResult<Version> {
         .into_iter()
         .filter_map(|v| {
             let version_string = v.clone();
-            let mut parts = version_string.split(".");
+            let mut parts = version_string.split('.');
 
             Some((
                 v,

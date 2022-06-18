@@ -36,7 +36,7 @@ impl Items {
         Ok(self
             .items_array()?
             .into_iter()
-            .map(|i| (i.id.clone(), i))
+            .map(|i| (i.id, i))
             .collect())
     }
 }

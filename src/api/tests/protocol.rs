@@ -1,11 +1,11 @@
-use std::sync::Arc;
-use crate::Api;
 use crate::api::protocol::Protocol;
 use crate::api::tests::get_test_versions;
 use crate::models::protocol::PacketDataType;
+use crate::Api;
+use std::sync::Arc;
 
 #[test]
-pub fn simple_test(){
+pub fn simple_test() {
     let versions = get_test_versions();
     for x in versions {
         let protocol = Protocol::new(Arc::new(x));
@@ -13,7 +13,7 @@ pub fn simple_test(){
         for protocol in protocol1.types.types {
             match protocol {
                 PacketDataType::Other(other, data) => {
-                    println!("{:?} data {:?}", other,data);
+                    println!("{:?} data {:?}", other, data);
                 }
                 _ => {}
             }

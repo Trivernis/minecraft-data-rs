@@ -21,10 +21,11 @@ mod entities;
 mod foods;
 mod items;
 mod loot;
+mod protocol;
 mod recipes;
 mod versions;
-mod protocol;
 
+use crate::api::protocol::Protocol;
 pub use biomes::*;
 pub use blocks::*;
 pub use enchantments::*;
@@ -34,7 +35,6 @@ pub use items::*;
 pub use loot::*;
 pub use recipes::*;
 pub use versions::*;
-use crate::api::protocol::Protocol;
 
 /// A type wrapping access to all the metadata
 /// about the selected minecraft version

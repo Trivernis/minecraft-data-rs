@@ -1,8 +1,9 @@
 pub mod types;
-pub use types::{NativeType, PacketDataTypes, PacketDataType,BitField};
-use serde::Deserialize;
+
+
+pub use types::{BitField, NativeType, PacketDataType, PacketDataTypes};
+
 #[derive(Deserialize)]
 pub struct Protocol {
     pub types: PacketDataTypes,
 }
-

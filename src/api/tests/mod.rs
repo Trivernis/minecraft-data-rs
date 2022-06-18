@@ -9,9 +9,9 @@ mod entities;
 mod foods;
 mod items;
 mod loot;
+mod protocol;
 mod recipes;
 mod versions;
-mod protocol;
 
 fn get_api(version: Version) -> Api {
     Api::new(version)
