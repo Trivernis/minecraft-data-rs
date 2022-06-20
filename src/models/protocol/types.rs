@@ -11,6 +11,13 @@ pub struct BitField {
     pub signed: bool,
 }
 
+#[derive(Debug)]
+pub enum SwitchType {
+    Packet(String),
+    Type(Box<PacketDataType>),
+    Unknown(Value),
+}
+
 /// These data types should be available in every version.
 /// However, they won't break anything if not present
 /// This can also be known as the Native Types
@@ -48,7 +55,7 @@ pub enum NativeType {
     Container(Vec<(String, Box<PacketDataType>)>),
     Switch {
         compare_to: String,
-        fields: HashMap<String, String>,
+        fields: HashMap<String, SwitchType>,
         default: Option<String>,
     },
     Void,
@@ -184,7 +191,19 @@ impl NativeType {
                                     Some(
                                         fields
                                             .into_iter()
-                                            .map(|(k, v)| (k, v.as_str().unwrap_or_default().to_string()))
+                                            .map(|(k, v)| {
+                                                if let Value::String(value) = v {
+                                                    if value.starts_with("packet") {
+                                                        (k, SwitchType::Packet(value))
+                                                    } else {
+                                                        (k, SwitchType::Type(build_inner_type(Value::String(value))))
+                                                    }
+                                                } else if let Value::Array(array) = v {
+                                                    (k, SwitchType::Type(build_inner_type(Value::Array(array))))
+                                                } else {
+                                                    (k, SwitchType::Unknown(v))
+                                                }
+                                            })
                                             .collect(),
                                     )
                                 } else {

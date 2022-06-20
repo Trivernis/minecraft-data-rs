@@ -1,6 +1,6 @@
 use crate::api::protocol::Protocol;
 use crate::api::tests::get_test_versions;
-use crate::models::protocol::PacketDataType;
+use crate::models::protocol::{NativeType, PacketDataType};
 use std::sync::Arc;
 use crate::DataResult;
 
@@ -12,9 +12,7 @@ pub fn simple_test() {
         let protocol = Protocol::new(arc.clone());
         let protocol1 = protocol.get_protocol();
         match protocol1 {
-            Ok(_) => {
-
-            }
+            Ok(_) => {}
             Err(error) => {
                 println!("{:?} On Version {}", error, arc.minecraft_version);
             }
