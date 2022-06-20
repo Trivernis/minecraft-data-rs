@@ -18,6 +18,35 @@ pub enum SwitchType {
     Unknown(Value),
 }
 
+#[derive(Debug)]
+pub enum TypeName {
+    Anonymous,
+    Named(String),
+}
+
+impl Display for TypeName {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match self {
+            TypeName::Anonymous => {
+                f.write_str("Anonymous")
+            }
+            TypeName::Named(name) => {
+                f.write_str(name.as_str())
+            }
+        }
+    }
+}
+
+impl PartialEq<String> for TypeName {
+    fn eq(&self, other: &String) -> bool {
+        if let TypeName::Named(name) = self {
+            name == other
+        } else {
+            false
+        }
+    }
+}
+
 /// These data types should be available in every version.
 /// However, they won't break anything if not present
 /// This can also be known as the Native Types
@@ -52,7 +81,7 @@ pub enum NativeType {
     TopBitSetTerminatedArray(Box<PacketDataType>),
     BitField(Vec<BitField>),
     // A set of Name and The Type
-    Container(Vec<(String, Box<PacketDataType>)>),
+    Container(Vec<(TypeName, Box<PacketDataType>)>),
     Switch {
         compare_to: String,
         fields: HashMap<String, SwitchType>,
@@ -162,11 +191,11 @@ impl NativeType {
                                     let name = name.as_str().unwrap().to_string();
                                     let inner_type = obj.remove("type").unwrap_or_default();
                                     let inner_type = build_inner_type(inner_type);
-                                    (name, inner_type)
+                                    (TypeName::Named(name), inner_type)
                                 } else {
                                     let inner_type = obj.remove("type").unwrap_or_default();
                                     let inner_type = build_inner_type(inner_type);
-                                    (String::new(), inner_type)
+                                    (TypeName::Anonymous, inner_type)
                                 }
                             } else {
                                 panic!("Container is not an object");
@@ -326,7 +355,7 @@ pub enum PacketDataType {
     // This type is built from a native type
     Built {
         // The name of the built type
-        name: String,
+        name: TypeName,
         // The value of the built type
         value: NativeType,
     },
@@ -351,7 +380,7 @@ impl PacketDataType {
                         NativeType::new(&inner_type_name, Cow::Borrowed(&inner_type_values))
                         {
                             Some(PacketDataType::Built {
-                                name: key.to_string(),
+                                name: TypeName::Named(key.to_string()),
                                 value: type_,
                             })
                         } else {
@@ -376,6 +405,7 @@ pub struct PacketDataTypes {
 }
 
 use std::fmt;
+use std::fmt::{Debug, Display, Formatter};
 
 use serde::de::{MapAccess};
 
