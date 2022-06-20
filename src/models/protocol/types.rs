@@ -4,7 +4,7 @@ use serde_json::Value;
 use std::borrow::{Cow};
 use std::collections::HashMap;
 
-#[derive(Deserialize,Debug)]
+#[derive(Deserialize, Debug)]
 pub struct BitField {
     pub name: String,
     pub size: i64,
@@ -152,7 +152,7 @@ impl NativeType {
                         .map(|v| {
                             if let Value::Object(mut obj) = v {
                                 if let Some(name) = obj.remove("name") {
-                                    let name = name.to_string();
+                                    let name = name.as_str().unwrap().to_string();
                                     let inner_type = obj.remove("type").unwrap_or_default();
                                     let inner_type = build_inner_type(inner_type);
                                     (name, inner_type)
@@ -176,7 +176,7 @@ impl NativeType {
             "switch" => {
                 if let Value::Object(mut layout) = layout.into_owned() {
                     return Some(NativeType::Switch {
-                        compare_to: layout.remove("compareTo").unwrap().to_string(),
+                        compare_to: layout.remove("compareTo").unwrap().as_str().unwrap_or_default().to_string(),
                         fields: layout
                             .remove("fields")
                             .and_then(|v| {
@@ -184,7 +184,7 @@ impl NativeType {
                                     Some(
                                         fields
                                             .into_iter()
-                                            .map(|(k, v)| (k, v.to_string()))
+                                            .map(|(k, v)| (k, v.as_str().unwrap_or_default().to_string()))
                                             .collect(),
                                     )
                                 } else {
@@ -192,7 +192,7 @@ impl NativeType {
                                 }
                             })
                             .unwrap_or_default(),
-                        default: layout.remove("default").map(|v| v.to_string()),
+                        default: layout.remove("default").map(|v| v.as_str().unwrap_or_default().to_string()),
                     });
                 }
                 None
@@ -224,6 +224,36 @@ impl NativeType {
             _ => None,
         }
     }
+    pub fn get_name(&self) -> &str {
+        match self {
+            NativeType::Bool => "bool",
+            NativeType::U8 => "u8",
+            NativeType::U16 => "u16",
+            NativeType::U32 => "u32",
+            NativeType::U64 => "u64",
+            NativeType::I8 => "i8",
+            NativeType::I16 => "i16",
+            NativeType::I32 => "i32",
+            NativeType::I64 => "i64",
+            NativeType::F32 => "f32",
+            NativeType::F64 => "f64",
+            NativeType::Uuid => "uuid",
+            NativeType::Option(_) => "option",
+            NativeType::EntityMetadataLoop { .. } => "entityMetadataLoop",
+            NativeType::TopBitSetTerminatedArray(_) => "topbitsetterminatedarray",
+            NativeType::BitField(_) => "bitfield",
+            NativeType::Container(_) => "container",
+            NativeType::Switch { .. } => "switch",
+            NativeType::Array { .. } => "array",
+            NativeType::Void => "void",
+            NativeType::RestBuffer => "restbuffer",
+            NativeType::NBT => "nbt",
+            NativeType::OptionalNBT => "optionalnbt",
+            NativeType::VarInt => { "varint" }
+            NativeType::PString { .. } => { "pstring" }
+            NativeType::Buffer { .. } => { "buffer" }
+        }
+    }
 }
 
 #[inline]
@@ -253,13 +283,13 @@ fn build_inner_type(value: Value) -> Box<PacketDataType> {
                     Box::new(value)
                 } else {
                     Box::new(PacketDataType::Other(
-                        key.to_string(),
+                        key.clone(),
                         inner_value.into_owned(),
                     ))
                 }
             } else {
                 Box::new(PacketDataType::Other(
-                    key.to_string(),
+                    key.as_str().unwrap_or_default().to_string(),
                     inner_value.into_owned(),
                 ))
             }
@@ -267,6 +297,7 @@ fn build_inner_type(value: Value) -> Box<PacketDataType> {
         v => Box::new(PacketDataType::Other(String::new(), v)),
     }
 }
+
 #[derive(Debug)]
 pub enum PacketDataType {
     // Just a pure native type
@@ -274,7 +305,12 @@ pub enum PacketDataType {
     // It was marked as "native" however, this enum does not have it
     UnknownNativeType(String),
     // This type is built from a native type
-    Built(NativeType),
+    Built {
+        // The name of the built type
+        name: String,
+        // The value of the built type
+        value: NativeType,
+    },
 
     Other(String, Value),
 }
@@ -295,20 +331,26 @@ impl PacketDataType {
                         return if let Some(type_) =
                         NativeType::new(&inner_type_name, Cow::Borrowed(&inner_type_values))
                         {
-                            Some(PacketDataType::Built(type_))
+                            Some(PacketDataType::Built {
+                                name: key.to_string(),
+                                value: type_,
+                            })
                         } else {
                             Some(PacketDataType::Other(inner_type_name, inner_type_values))
                         };
                     }
                     None
                 }
-                _ => None,
+                v => {
+                    return Some(PacketDataType::Other(key.to_string(), v));
+                }
             }
         } else {
             None
         }
     }
 }
+
 #[derive(Debug)]
 pub struct PacketDataTypes {
     pub types: Vec<PacketDataType>,
