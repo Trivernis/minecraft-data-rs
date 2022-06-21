@@ -1,3 +1,4 @@
+#![cfg(feature = "api")]
 mod datapaths;
 
 use crate::data::datapaths::Datapaths;
