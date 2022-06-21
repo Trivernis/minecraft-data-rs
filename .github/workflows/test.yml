@@ -15,6 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         if: ${{ !env.ACT }}
+        with:
+          submodules: recursive
 
       - name: Cache build data
         if: ${{ !env.ACT }}
