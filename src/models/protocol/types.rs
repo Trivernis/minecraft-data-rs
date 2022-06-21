@@ -390,7 +390,7 @@ impl PacketDataType {
                     None
                 }
                 v => {
-                    return Some(PacketDataType::Other(key.to_string(), v));
+                    Some(PacketDataType::Other(key.to_string(), v))
                 }
             }
         } else {
