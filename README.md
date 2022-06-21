@@ -26,6 +26,13 @@ for food in food {
 }
 ```
 
+## Features
+
+| Feature      | Description                                                |
+| -------------|------------------------------------------------------------|
+| include-data | includes the whole minecraft-data repository in the binary |
+| api          | enables the api to query minecraft data                    |
+
 # License
 
 This project is Licensed under MIT.
