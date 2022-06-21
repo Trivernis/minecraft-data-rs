@@ -33,10 +33,6 @@ impl Items {
 
     /// Returns the items indexed by ID
     pub fn items(&self) -> DataResult<HashMap<u32, Item>> {
-        Ok(self
-            .items_array()?
-            .into_iter()
-            .map(|i| (i.id.clone(), i))
-            .collect())
+        Ok(self.items_array()?.into_iter().map(|i| (i.id, i)).collect())
     }
 }
