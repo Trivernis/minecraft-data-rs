@@ -4,6 +4,11 @@ This repository is a rust library to access minecraft data.
 The data itself hosted in the [minecraft-data](https://github.com/PrismarineJS/minecraft-data) repository
 and included into the library at compile time.
 
+
+### Excluding the minecraft-data at compile time
+By adding `default-features=false` to the dependency in your `Cargo.toml` file, you can exclude the minecraft-data from the library.
+
+
 ## Usage
 
 ```rust
