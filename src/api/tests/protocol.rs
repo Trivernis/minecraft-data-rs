@@ -1,9 +1,10 @@
 use crate::api::protocol::Protocol;
 use crate::api::tests::get_test_versions;
-use crate::models::protocol::{NativeType, PacketDataType};
+use crate::models::protocol::{PacketDataType};
 use std::sync::Arc;
-use crate::DataResult;
+
 pub const VERSIONS_TO_SKIP: [&str; 3] = ["21w07a", "20w14a", "20w13b"];
+
 #[test]
 pub fn simple_test() {
     let versions = get_test_versions();

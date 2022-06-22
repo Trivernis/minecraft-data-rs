@@ -169,8 +169,8 @@ impl NativeType {
     pub fn new(name: &str, layout: Cow<'_, Value>) -> Option<Self> {
         match name {
             "varint" => Some(NativeType::VarInt),
-            "pstring" => Self::pstring(layout),
-            "buffer" => Self::generate_buffer(layout),
+            "pstring" => Self::new_pstring(layout),
+            "buffer" => Self::new_buffer(layout),
             "bool" => Some(NativeType::Bool),
             "u8" => Some(NativeType::U8),
             "u16" => Some(NativeType::U16),
@@ -184,14 +184,14 @@ impl NativeType {
             "f64" => Some(NativeType::F64),
             "uuid" => Some(NativeType::Uuid),
             "option" => Some(NativeType::Option(build_inner_type(layout.into_owned()))),
-            "entityMetadataLoop" => Self::entity_metadata_loop(layout),
-            "topbitsetterminatedarray" => Self::top_bitsetterminated_array(layout),
-            "bitfield" => Self::bitfield(layout),
-            "container" => Self::container(layout),
+            "entityMetadataLoop" => Self::new_entity_metadata_loop(layout),
+            "topbitsetterminatedarray" => Self::new_top_bitsetterminated_array(layout),
+            "bitfield" => Self::new_bitfield(layout),
+            "container" => Self::new_container(layout),
 
-            "switch" => Self::switch(layout),
+            "switch" => Self::new_switch(layout),
             "void" => Some(NativeType::Void),
-            "array" => Self::array(layout),
+            "array" => Self::new_array(layout),
 
             "restbuffer" => Some(NativeType::RestBuffer),
             "nbt" => Some(NativeType::NBT),
@@ -200,7 +200,7 @@ impl NativeType {
         }
     }
 
-    pub fn pstring(layout: Cow<Value>) -> Option<NativeType> {
+    pub fn new_pstring(layout: Cow<Value>) -> Option<NativeType> {
         if let Value::Object(mut obj) = layout.into_owned() {
             if let Value::String(count_type) = obj.remove("countType").unwrap_or_default() {
                 if let Some(count_type) = NativeType::new(&count_type, Cow::Owned(Value::Null)) {
@@ -213,7 +213,7 @@ impl NativeType {
         None
     }
 
-    fn top_bitsetterminated_array(layout: Cow<Value>) -> Option<NativeType> {
+    fn new_top_bitsetterminated_array(layout: Cow<Value>) -> Option<NativeType> {
         if let Value::Object(mut layout) = layout.into_owned() {
             let inner_type = layout.remove("type").unwrap_or_default();
             let inner_type = build_inner_type(inner_type);
@@ -222,7 +222,7 @@ impl NativeType {
         None
     }
 
-    pub fn bitfield(layout: Cow<Value>) -> Option<NativeType> {
+    pub fn new_bitfield(layout: Cow<Value>) -> Option<NativeType> {
         if let Value::Array(bit_fields) = layout.into_owned() {
             let bit_fields_vec = bit_fields
                 .into_iter()
@@ -235,7 +235,7 @@ impl NativeType {
         }
     }
 
-    pub fn switch(layout: Cow<Value>) -> Option<NativeType> {
+    pub fn new_switch(layout: Cow<Value>) -> Option<NativeType> {
         if let Value::Object(mut layout) = layout.into_owned() {
             return Some(NativeType::Switch {
                 compare_to: layout
@@ -289,7 +289,7 @@ impl NativeType {
         None
     }
 
-    pub fn array(layout: Cow<Value>) -> Option<NativeType> {
+    pub fn new_array(layout: Cow<Value>) -> Option<NativeType> {
         if let Value::Object(mut obj) = layout.into_owned() {
             let value = NativeType::new(
                 obj.remove("countType")
@@ -309,7 +309,7 @@ impl NativeType {
         None
     }
 
-    pub fn container(layout: Cow<Value>) -> Option<NativeType> {
+    pub fn new_container(layout: Cow<Value>) -> Option<NativeType> {
         if let Value::Array(containers) = layout.into_owned() {
             let containers_vec = containers
                 .into_iter()
@@ -337,7 +337,7 @@ impl NativeType {
         }
     }
 
-    pub fn entity_metadata_loop(layout: Cow<Value>) -> Option<NativeType> {
+    pub fn new_entity_metadata_loop(layout: Cow<Value>) -> Option<NativeType> {
         match layout.into_owned() {
             Value::Object(mut layout) => {
                 let end_val = layout
@@ -355,7 +355,7 @@ impl NativeType {
         }
     }
 
-    pub fn generate_buffer(layout: Cow<Value>) -> Option<NativeType> {
+    pub fn new_buffer(layout: Cow<Value>) -> Option<NativeType> {
         if let Value::Object(mut obj) = layout.into_owned() {
             if let Value::String(count_type) = obj.remove("countType").unwrap_or_default() {
                 if let Some(count_type) = NativeType::new(&count_type, Cow::Owned(Value::Null)) {
