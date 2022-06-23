@@ -6,7 +6,7 @@ pub struct Biome {
     pub category: String,
     pub temperature: f32,
     pub precipitation: String,
-    pub depth: f32,
+    pub depth: Option<f32>,
     pub dimension: String,
     pub display_name: String,
     pub color: u32,
