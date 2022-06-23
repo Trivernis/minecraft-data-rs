@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::convert::TryInto;
 use std::fmt;
-use std::iter::Map;
 use std::num::ParseIntError;
 
 use serde::de::{SeqAccess, Visitor};
@@ -45,11 +44,10 @@ pub struct PacketMapperSwitch {
     pub switch: PacketSwitch,
 }
 
-
 impl<'de> Deserialize<'de> for PacketMapperSwitch {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where
-            D: Deserializer<'de>,
+    where
+        D: Deserializer<'de>,
     {
         struct PacketMapperSwitchVisitor;
 
@@ -60,23 +58,31 @@ impl<'de> Deserialize<'de> for PacketMapperSwitch {
                 formatter.write_str("Expected a sequence")
             }
             fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
-                where
-                    A: SeqAccess<'de>,
+            where
+                A: SeqAccess<'de>,
             {
                 let mut mapper = None;
                 let mut switch = None;
                 while let Some(value) = seq.next_element::<Value>()? {
                     if let Value::Object(mut value) = value {
-                        let value = value.remove("type").ok_or_else(|| de::Error::missing_field("type"))?;
+                        let value = value
+                            .remove("type")
+                            .ok_or_else(|| de::Error::missing_field("type"))?;
                         if let Value::Array(mut array) = value {
-                            let value = array.pop().ok_or_else(|| de::Error::missing_field("missing content"))?;
-                            let key = array.pop().ok_or_else(|| de::Error::missing_field("missing key"))?;
+                            let value = array
+                                .pop()
+                                .ok_or_else(|| de::Error::missing_field("missing content"))?;
+                            let key = array
+                                .pop()
+                                .ok_or_else(|| de::Error::missing_field("missing key"))?;
                             if let Value::String(key) = key {
                                 if key.eq("mapper") {
-                                    let value: PacketMapper = serde_json::from_value(value).map_err(de::Error::custom)?;
+                                    let value: PacketMapper =
+                                        serde_json::from_value(value).map_err(de::Error::custom)?;
                                     mapper = Some(value);
                                 } else if key.eq("switch") {
-                                    let value: PacketSwitch = serde_json::from_value(value).map_err(de::Error::custom)?;
+                                    let value: PacketSwitch =
+                                        serde_json::from_value(value).map_err(de::Error::custom)?;
                                     switch = Some(value);
                                 } else {
                                     return Err(de::Error::custom("unknown key"));
