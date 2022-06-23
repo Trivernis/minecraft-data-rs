@@ -21,9 +21,11 @@ mod entities;
 mod foods;
 mod items;
 mod loot;
+mod protocol;
 mod recipes;
 mod versions;
 
+use crate::api::protocol::Protocol;
 pub use biomes::*;
 pub use blocks::*;
 pub use enchantments::*;
@@ -47,6 +49,7 @@ pub struct Api {
     pub foods: Foods,
     pub biomes: Biomes,
     pub entities: Entities,
+    pub protocols: Protocol,
 }
 
 impl Api {
@@ -68,6 +71,7 @@ impl Api {
             foods: Foods::new(Arc::clone(&version)),
             biomes: Biomes::new(Arc::clone(&version)),
             entities: Entities::new(Arc::clone(&version)),
+            protocols: Protocol::new(Arc::clone(&version)),
         }
     }
 }

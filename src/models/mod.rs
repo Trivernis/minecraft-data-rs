@@ -7,5 +7,6 @@ pub mod entity;
 pub mod entity_loot;
 pub mod food;
 pub mod item;
+pub mod protocol;
 pub mod recipe;
 pub mod version;
