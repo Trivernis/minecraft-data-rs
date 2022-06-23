@@ -295,16 +295,14 @@ impl NativeType {
                 obj.remove("countType")
                     .unwrap_or_default()
                     .as_str()
-                    .unwrap(),
+                    .unwrap_or_default(),
                 Cow::Owned(Value::Null),
-            );
+            ).unwrap_or(NativeType::VarInt);
             let inner_type = build_inner_type(obj.remove("type").unwrap_or_default());
-            if let Some(v) = value {
-                return Some(NativeType::Array {
-                    count_type: Box::new(v),
-                    array_type: inner_type,
-                });
-            }
+            return Some(NativeType::Array {
+                count_type: Box::new(value),
+                array_type: inner_type,
+            });
         }
         None
     }
@@ -370,7 +368,7 @@ impl NativeType {
 }
 
 #[inline]
-fn build_inner_type(value: Value) -> Box<PacketDataType> {
+pub(crate) fn build_inner_type(value: Value) -> Box<PacketDataType> {
     match value {
         Value::String(simple_type) => {
             return if let Some(simple_type) = NativeType::new(&simple_type, Cow::Owned(Value::Null))
@@ -495,7 +493,7 @@ impl PacketDataType {
     }
 }
 
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct PacketDataTypes {
     pub types: Vec<PacketDataType>,
 }

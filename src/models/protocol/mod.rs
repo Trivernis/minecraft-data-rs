@@ -63,7 +63,7 @@ impl Into<PacketDataType> for DataTypeReference {
 #[derive(Debug, Clone)]
 pub struct Packet {
     pub name: String,
-    pub data: Vec<(String, DataTypeReference)>,
+    pub data: PacketDataType,
 }
 
 #[derive(Debug, Clone)]
@@ -106,45 +106,15 @@ impl<'de> Deserialize<'de> for PacketTypes {
                                     } else {
                                         return Err(de::Error::custom("Invalid Packet Mapper"));
                                     }
-                                } else if let Value::Array(mut array) = value {
-                                    let last = array.pop().ok_or_else(|| de::Error::missing_field("missing content"))?;
-                                    if let Value::Array(array) = last {
-                                        let mut packet_content = Vec::new();
-                                        for value in array.into_iter() {
-                                            if let Value::Object(mut obj) = value {
-                                                let name = obj.remove("name");
-                                                let name = if let Some(name) = name {
-                                                    name.to_string()
-                                                } else {
-                                                    "anon".to_string()
-                                                };
-                                                let value = obj.remove("type").ok_or_else(|| de::Error::custom(format!("Packet ID {} missing type", key)))?;
-                                                let value = match value {
-                                                    Value::String(simple) => {
-                                                        DataTypeReference::Simple(simple)
-                                                    }
-                                                    Value::Array(mut array) => {
-                                                        let properties = array.pop().ok_or_else(|| de::Error::custom(format!("Packet ID {} missing properties", key)))?;
-                                                        let name = array.pop().ok_or_else(|| de::Error::custom(format!("Packet ID {} missing name", key)))?.to_string();
-                                                        DataTypeReference::Complex {
-                                                            name,
-                                                            properties,
-                                                        }
-                                                    }
-                                                    _ => return Err(de::Error::custom(format!("Invalid Packet Invalid Type {}", key)))
-                                                };
-                                                packet_content.push((name, value));
-                                            } else {
-                                                return Err(de::Error::custom(format!("Invalid Packet Expected Object {}", key)));
-                                            }
-                                        }
+                                } else if let Value::Array( array) = value {
+                                    let value1 = Value::Array(vec![Value::String(key.clone()), Value::Array(array)]);
+                                    println!("{:#?}", value1);
+                                    let inner_type = types::build_inner_type(value1);
                                         packets.push(Packet {
                                             name: key,
-                                            data: packet_content,
+                                            data: *inner_type,
                                         });
-                                    } else {
-                                        return Err(de::Error::custom(format!("Invalid Packet {}", key)));
-                                    }
+
                                 } else {
                                     return Err(de::Error::custom(format!("Invalid Packet  Expected Array {}", key)));
                                 }
