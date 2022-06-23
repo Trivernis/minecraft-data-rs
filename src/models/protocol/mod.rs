@@ -108,7 +108,6 @@ impl<'de> Deserialize<'de> for PacketTypes {
                                     }
                                 } else if let Value::Array( array) = value {
                                     let value1 = Value::Array(vec![Value::String(key.clone()), Value::Array(array)]);
-                                    println!("{:#?}", value1);
                                     let inner_type = types::build_inner_type(value1);
                                         packets.push(Packet {
                                             name: key,

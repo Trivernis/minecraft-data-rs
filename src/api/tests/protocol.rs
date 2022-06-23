@@ -19,9 +19,7 @@ pub fn simple_test() {
         let protocol1 = protocol.get_protocol();
         match protocol1 {
             Ok(data) => {
-                for x in data.play.to_server.types {
-                    println!("{:#?}", x);
-                }
+
             }
             Err(error) => {
                 panic!("Minecraft Version {} could not be parsed into a Protocol object: {}", arc.minecraft_version, error);
