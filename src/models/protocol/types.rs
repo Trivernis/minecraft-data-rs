@@ -457,7 +457,7 @@ impl PacketDataType {
                 Value::Array(mut array) => {
                     if array.len() != 2 {
                         return Some(PacketDataType::Other {
-                            name: None,
+                            name: Some(key.to_string().into()),
                             value: Value::Array(array),
                         });
                     }
@@ -482,7 +482,7 @@ impl PacketDataType {
                     None
                 }
                 v => Some(PacketDataType::Other {
-                    name: None,
+                    name: Some(key.to_string().into()),
                     value: v,
                 }),
             }
