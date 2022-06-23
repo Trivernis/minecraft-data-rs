@@ -409,7 +409,7 @@ fn build_inner_type(value: Value) -> Box<PacketDataType> {
             } else {
                 Box::new(PacketDataType::Other {
                     name: None,
-                    value: inner_value.into_owned(),
+                    value: Value::Array(vec![key, inner_value.into_owned()]),
                 })
             }
         }
