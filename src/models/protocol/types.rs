@@ -435,6 +435,9 @@ pub enum PacketDataType {
     },
     /// A Type that could not be built or parsed. This is a fallback for when we don't know what the type is
     /// This type is usually a reference to a built type
+    ///
+    /// If this is a reference you you will want to push any data within Value to the reference.
+    /// For example the Packet type references another type called "PacketData" that has a variable within it for the compareTo value. You will want to take the value from the Value and push it to the PacketData type.
     Other {
         // The name of the type if found
         name: Option<TypeName>,
@@ -492,7 +495,7 @@ impl PacketDataType {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct PacketDataTypes {
     pub types: Vec<PacketDataType>,
 }

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+use std::convert::TryInto;
 use crate::api::protocol::Protocol;
 use crate::api::tests::get_test_versions;
 use crate::models::protocol::{PacketDataType};

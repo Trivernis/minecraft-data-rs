@@ -1,26 +1,45 @@
 use std::collections::HashMap;
+use std::convert::TryInto;
 use std::fmt;
+use std::iter::Map;
+use std::num::ParseIntError;
 
 use serde::de::{SeqAccess, Visitor};
 use serde::{de, Deserialize, Deserializer};
 use serde_json::Value;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct PacketMapper {
     /// A Type
     #[serde(rename = "type")]
     pub map_type: String,
+    /// The first Value is a Hex value of the packet id. That is a string in the JSON. You can convert the map with the `i32::from_str_radix` (The ids do start with 0x) function. You can also just do try_into::<HashMap<i32, String>() on the PacketMapper
+    /// The second Value is the name of the packet
     pub mappings: HashMap<String, String>,
 }
 
-#[derive(Deserialize, Debug)]
+impl TryInto<HashMap<i32, String>> for PacketMapper {
+    type Error = ParseIntError;
+
+    fn try_into(self) -> Result<HashMap<i32, String>, Self::Error> {
+        let mut map = HashMap::with_capacity(self.mappings.len());
+        for (key, value) in self.mappings.into_iter() {
+            let key = i32::from_str_radix(key.trim_start_matches("0x"), 16)?;
+            map.insert(key, value);
+        }
+        Ok(map)
+    }
+}
+
+#[derive(Deserialize, Debug, Clone)]
 pub struct PacketSwitch {
     #[serde(rename = "compareTo")]
     pub compare_to: String,
+    /// First value is the name of the packet. Second is the name of the JSON object for the packet.
     pub fields: HashMap<String, String>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PacketMapperSwitch {
     pub mapper: PacketMapper,
     pub switch: PacketSwitch,
@@ -59,10 +78,10 @@ impl<'de> Deserialize<'de> for PacketMapperSwitch {
                                 } else if key.eq("switch") {
                                     let value: PacketSwitch = serde_json::from_value(value).map_err(de::Error::custom)?;
                                     switch = Some(value);
-                                }else{
+                                } else {
                                     return Err(de::Error::custom("unknown key"));
                                 }
-                            }else{
+                            } else {
                                 return Err(de::Error::custom("unknown key"));
                             }
                         } else {

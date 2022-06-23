@@ -1,6 +1,7 @@
 pub mod types;
 pub mod packet_mapper;
 
+use std::borrow::Cow;
 use std::fmt;
 use serde::{de, Deserialize, Deserializer};
 use serde::de::{MapAccess, Visitor};
@@ -8,7 +9,7 @@ use serde_json::Value;
 pub use packet_mapper::{PacketMapper, PacketSwitch, PacketMapperSwitch};
 pub use types::{BitField, NativeType, PacketDataType, PacketDataTypes};
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Protocol {
     pub types: PacketDataTypes,
     pub handshaking: PacketGrouping,
@@ -17,7 +18,7 @@ pub struct Protocol {
     pub play: PacketGrouping,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct PacketGrouping {
     #[serde(rename = "toServer")]
     pub to_server: PacketTypes,
@@ -25,7 +26,7 @@ pub struct PacketGrouping {
     pub to_client: PacketTypes,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum DataTypeReference {
     Simple(String),
     Complex {
@@ -34,13 +35,38 @@ pub enum DataTypeReference {
     },
 }
 
-#[derive(Debug)]
+impl Into<PacketDataType> for DataTypeReference {
+    fn into(self) -> PacketDataType {
+        let (name, properties) = match self {
+            DataTypeReference::Simple(simple) => {
+                (simple, Value::Null)
+            }
+            DataTypeReference::Complex { name, properties } => {
+                (name, properties)
+            }
+        };
+
+        PacketDataType::new(name.as_str(), Cow::Borrowed(&properties)).
+            or_else(|| {
+                let option = NativeType::new(name.as_str(), Cow::Borrowed(&properties));
+                option.map(PacketDataType::Native)
+            })
+            .unwrap_or_else(|| {
+                PacketDataType::Other {
+                    name: Some(name.into()),
+                    value: properties,
+                }
+            })
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct Packet {
     pub name: String,
     pub data: Vec<(String, DataTypeReference)>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PacketTypes {
     pub packet_mapper: PacketMapperSwitch,
     pub types: Vec<Packet>,
@@ -89,7 +115,7 @@ impl<'de> Deserialize<'de> for PacketTypes {
                                                 let name = obj.remove("name");
                                                 let name = if let Some(name) = name {
                                                     name.to_string()
-                                                }else{
+                                                } else {
                                                     "anon".to_string()
                                                 };
                                                 let value = obj.remove("type").ok_or_else(|| de::Error::custom(format!("Packet ID {} missing type", key)))?;
