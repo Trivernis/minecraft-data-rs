@@ -32,9 +32,9 @@ pub enum DataTypeReference {
     Complex { name: String, properties: Value },
 }
 
-impl Into<PacketDataType> for DataTypeReference {
-    fn into(self) -> PacketDataType {
-        let (name, properties) = match self {
+impl From<DataTypeReference> for PacketDataType {
+    fn from(val: DataTypeReference) -> Self {
+        let (name, properties) = match val {
             DataTypeReference::Simple(simple) => (simple, Value::Null),
             DataTypeReference::Complex { name, properties } => (name, properties),
         };
