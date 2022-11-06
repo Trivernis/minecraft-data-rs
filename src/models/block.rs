@@ -13,7 +13,7 @@ pub struct Block {
     pub material: Option<String>,
     pub harvest_tool: Option<HashMap<u32, bool>>,
     pub variations: Option<Vec<Variation>>,
-    pub drops: Vec<u32>,
+    pub drops: Vec<Drop>,
     pub transparent: bool,
     pub emit_light: u8,
     pub filter_light: u8,
@@ -38,6 +38,25 @@ pub struct Variation {
     pub metadata: u32,
     pub display_name: String,
     pub description: Option<String>,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+#[serde(untagged)]
+pub enum DropId {
+    Id(u32),
+    IdWithMetadata { id: u32, metadata: u32 },
+}
+
+#[derive(Deserialize, Debug, Clone)]
+#[serde(rename_all(deserialize = "camelCase", serialize = "snake_case"))]
+#[serde(untagged)]
+pub enum Drop {
+    Id(u32),
+    DropInfo {
+        drop: DropId,
+        min_count: Option<f32>,
+        max_count: Option<f32>,
+    }
 }
 
 #[derive(Deserialize, Debug, Clone)]
