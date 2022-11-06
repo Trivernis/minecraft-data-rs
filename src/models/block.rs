@@ -11,7 +11,7 @@ pub struct Block {
     pub diggable: bool,
     pub bounding_box: BoundingBox,
     pub material: Option<String>,
-    pub harvest_tool: Option<HashMap<u32, bool>>,
+    pub harvest_tools: Option<HashMap<u32, bool>>,
     pub variations: Option<Vec<Variation>>,
     pub drops: Vec<u32>,
     pub transparent: bool,
