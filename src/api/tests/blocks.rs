@@ -12,6 +12,18 @@ pub fn test_blocks_array() {
 }
 
 #[test]
+pub fn test_blocks_by_state_id() {
+    let versions = get_test_versions();
+
+    for version in versions {
+        let api = get_api(version);
+        let blocks = api.blocks.blocks_array().unwrap();
+        let by_state = api.blocks.blocks_by_state_id(&blocks);
+        assert!(by_state.is_ok());
+    }
+}
+
+#[test]
 pub fn test_blocks_by_name() {
     let versions = get_test_versions();
 
