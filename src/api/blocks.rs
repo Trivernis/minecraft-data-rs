@@ -23,14 +23,15 @@ impl Blocks {
         Ok(blocks)
     }
 
-    // Returns the references of blocks indexed by state ID
-    pub fn blocks_by_state_id<'a>(&self, blocks: &'a Vec<Block>) -> DataResult<HashMap<u32, &'a Block>> {
+    // Returns the blocks indexed by state ID
+    pub fn blocks_by_state_id(&self) -> DataResult<HashMap<u32, Block>> {
+        let blocks = self.blocks_array()?;
         let mut blocks_map = HashMap::new();
         blocks.iter().for_each(|b| {
             let min_state_id = b.min_state_id.unwrap_or(b.id << 4);
             let max_state_id = b.max_state_id.unwrap_or(min_state_id + 15);
             (min_state_id..max_state_id).for_each(|s| {
-                blocks_map.insert(s, b);
+                blocks_map.insert(s, b.clone());
             });
         });
         
