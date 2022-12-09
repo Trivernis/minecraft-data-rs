@@ -68,6 +68,12 @@ pub fn get_path(version: &Version, filename: &str) -> DataResult<String> {
     PATHS
         .pc
         .get(&version.minecraft_version)
+        // fallback to major version
+        .or_else(||
+            PATHS
+            .pc
+            .get(&version.major_version)
+        )
         .ok_or_else(|| DataError::NotFoundError(version.minecraft_version.clone()))?
         .get(filename)
         .cloned()
