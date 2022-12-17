@@ -7,7 +7,7 @@ use std::collections::HashMap;
 /// Returns the unsorted list of versions
 pub fn versions() -> DataResult<Vec<Version>> {
     let content = get_common_file(PROTOCOL_VERSIONS_FILE)?;
-    let versions = serde_json::from_str::<Vec<Version>>(&*content)?;
+    let versions = serde_json::from_str::<Vec<Version>>(&content)?;
 
     Ok(versions)
 }
@@ -52,5 +52,5 @@ pub fn latest_stable() -> DataResult<Version> {
 /// Returns a list of available version information
 pub fn available_versions() -> DataResult<Vec<String>> {
     let content = get_common_file(VERSIONS_FILE)?;
-    serde_json::from_str::<Vec<String>>(&*content).map_err(DataError::from)
+    serde_json::from_str::<Vec<String>>(&content).map_err(DataError::from)
 }
