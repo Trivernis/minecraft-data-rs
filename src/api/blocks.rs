@@ -23,11 +23,18 @@ impl Blocks {
         Ok(blocks)
     }
 
-    /// Returns the blocks indexed by ID
-    pub fn blocks(&self) -> DataResult<HashMap<u32, Block>> {
+    // Returns the blocks indexed by state ID
+    pub fn blocks_by_state_id(&self) -> DataResult<HashMap<u32, Block>> {
         let blocks = self.blocks_array()?;
-        let blocks_map = blocks.into_iter().map(|b| (b.id, b)).collect();
-
+        let mut blocks_map = HashMap::new();
+        blocks.iter().for_each(|b| {
+            let min_state_id = b.min_state_id.unwrap_or(b.id << 4);
+            let max_state_id = b.max_state_id.unwrap_or(min_state_id + 15);
+            (min_state_id..max_state_id).for_each(|s| {
+                blocks_map.insert(s, b.clone());
+            });
+        });
+        
         Ok(blocks_map)
     }
 
@@ -35,6 +42,14 @@ impl Blocks {
     pub fn blocks_by_name(&self) -> DataResult<HashMap<String, Block>> {
         let blocks = self.blocks_array()?;
         let blocks_map = blocks.into_iter().map(|b| (b.name.clone(), b)).collect();
+
+        Ok(blocks_map)
+    }
+
+    /// Returns the blocks indexed by ID
+    pub fn blocks(&self) -> DataResult<HashMap<u32, Block>> {
+        let blocks = self.blocks_array()?;
+        let blocks_map = blocks.into_iter().map(|b| (b.id, b)).collect();
 
         Ok(blocks_map)
     }
