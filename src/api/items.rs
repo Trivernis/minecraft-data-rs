@@ -19,7 +19,7 @@ impl Items {
     pub fn items_array(&self) -> DataResult<Vec<Item>> {
         let content = get_version_specific_file(&self.version, ITEMS_FILE)?;
 
-        serde_json::from_str::<Vec<Item>>(&*content).map_err(DataError::from)
+        serde_json::from_str::<Vec<Item>>(&content).map_err(DataError::from)
     }
 
     /// Returns the items indexed by name

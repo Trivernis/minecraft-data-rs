@@ -20,7 +20,7 @@ impl Enchantments {
     pub fn enchantments_array(&self) -> DataResult<Vec<Enchantment>> {
         let content = get_version_specific_file(&self.version, ENCHANTMENTS_FILE)?;
 
-        serde_json::from_str::<Vec<Enchantment>>(&*content).map_err(DataError::from)
+        serde_json::from_str::<Vec<Enchantment>>(&content).map_err(DataError::from)
     }
 
     /// Returns a map of enchantments indexed by ID

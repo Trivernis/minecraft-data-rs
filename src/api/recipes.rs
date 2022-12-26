@@ -18,6 +18,6 @@ impl Recipes {
     /// Returns a list of recipes indexed by item ID
     pub fn recipes(&self) -> DataResult<HashMap<u32, Vec<Recipe>>> {
         let content = get_version_specific_file(&self.version, RECIPES_FILE)?;
-        serde_json::from_str::<HashMap<u32, Vec<Recipe>>>(&*content).map_err(DataError::from)
+        serde_json::from_str::<HashMap<u32, Vec<Recipe>>>(&content).map_err(DataError::from)
     }
 }
