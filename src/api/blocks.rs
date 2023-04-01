@@ -30,7 +30,7 @@ impl Blocks {
         blocks.iter().for_each(|b| {
             let min_state_id = b.min_state_id.unwrap_or(b.id << 4);
             let max_state_id = b.max_state_id.unwrap_or(min_state_id + 15);
-            (min_state_id..max_state_id).for_each(|s| {
+            (min_state_id..=max_state_id).for_each(|s| {
                 blocks_map.insert(s, b.clone());
             });
         });
