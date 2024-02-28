@@ -6,7 +6,7 @@ use crate::models::version::Version;
 use crate::{DataError, DataResult};
 use include_dir::Dir;
 
-pub static MINECRAFT_DATA: Dir = include_dir::include_dir!("minecraft-data/data");
+pub static MINECRAFT_DATA: Dir = include_dir::include_dir!("$MINECRAFT_DATA_PATH_INTERNAL/data");
 
 pub static BIOMES_FILE: &str = "biomes";
 pub static BLOCK_LOOT_FILE: &str = "blockLoot";
@@ -69,11 +69,7 @@ pub fn get_path(version: &Version, filename: &str) -> DataResult<String> {
         .pc
         .get(&version.minecraft_version)
         // fallback to major version
-        .or_else(||
-            PATHS
-            .pc
-            .get(&version.major_version)
-        )
+        .or_else(|| PATHS.pc.get(&version.major_version))
         .ok_or_else(|| DataError::NotFoundError(version.minecraft_version.clone()))?
         .get(filename)
         .cloned()

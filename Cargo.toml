@@ -1,6 +1,6 @@
 [package]
 name = "minecraft-data-rs"
-version = "0.8.0"
+version = "0.8.1"
 authors = ["trivernis <trivernis@protonmail.com>"]
 edition = "2021"
 readme = "README.md"
@@ -8,7 +8,9 @@ license = "MIT"
 description = "A wrapper for minecraft-data"
 repository = "https://github.com/Trivernis/minecraft-data-rs"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[package.metadata]
+minecraft_data_repo = "https://github.com/PrismarineJS/minecraft-data.git"
+minecraft_data_commit = "46b78398b6f351958e02fbd266424f0ee0ab138b"
 
 [dependencies]
 thiserror = "1.0.38"
@@ -19,7 +21,14 @@ include_dir = { version = "0.7.3", optional = true }
 itertools = { version = "0.10.5", optional = true }
 lazy_static = { version = "1.4.0", optional = true }
 
+[build-dependencies]
+git2 = {version = "0.18.2", optional = true}
+dirs = {version = "5.0.1", optional = true}
+cargo_toml = {version = "0.19.1", optional = true}
+serde = { version = "1.0.151", features = ["derive"], optional = true }
+
 [features]
 default = ["include-data", "api"]
-include-data = ["include_dir", "itertools", "lazy_static"]
+include-data = ["include_dir", "itertools", "lazy_static", "git2", "dirs", "cargo_toml", "serde/derive"]
 api = ["include-data"]
+
