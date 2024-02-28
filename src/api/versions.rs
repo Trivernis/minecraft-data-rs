@@ -43,8 +43,7 @@ pub fn latest_stable() -> DataResult<Version> {
         })
         .map(|(v, _, _, _)| v)
         .filter_map(|v| versions_by_minecraft_version().ok()?.remove(&v))
-        .rev()
-        .next();
+        .next_back();
 
     latest.ok_or_else(|| DataError::NotFoundError(String::from("latest version")))
 }
