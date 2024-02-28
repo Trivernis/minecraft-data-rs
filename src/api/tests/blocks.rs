@@ -31,7 +31,7 @@ pub fn test_blocks_by_name() {
         let by_name = api.blocks.blocks_by_name().unwrap();
         assert!(by_name.get("dirt").is_some());
         assert!(by_name.get("stone").is_some());
-        assert_eq!(by_name.get("grass").unwrap().stack_size, 64)
+        assert_eq!(by_name.get("grass_block").unwrap().stack_size, 64)
     }
 }
 

@@ -5,10 +5,10 @@ pub struct Biome {
     pub name: String,
     pub category: String,
     pub temperature: f32,
-    pub precipitation: String,
+    pub precipitation: Option<String>,
     pub depth: Option<f32>,
     pub dimension: String,
     pub display_name: String,
     pub color: u32,
-    pub rainfall: f32,
+    pub rainfall: Option<f32>,
 }

@@ -1,8 +1,8 @@
 [package]
 name = "minecraft-data-rs"
-version = "0.7.2"
+version = "0.8.0"
 authors = ["trivernis <trivernis@protonmail.com>"]
-edition = "2018"
+edition = "2021"
 readme = "README.md"
 license = "MIT"
 description = "A wrapper for minecraft-data"

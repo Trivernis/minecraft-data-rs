@@ -1,12 +1,11 @@
-use crate::api::biomes::Biomes;
-use crate::api::blocks::Blocks;
-use crate::api::enchantments::Enchantments;
-use crate::api::entities::Entities;
-use crate::api::foods::Foods;
-use crate::api::items::Items;
-use crate::api::loot::Loot;
-use crate::api::recipes::Recipes;
-use crate::api::versions::latest_stable;
+pub use crate::api::biomes::Biomes;
+pub use crate::api::blocks::Blocks;
+pub use crate::api::enchantments::Enchantments;
+pub use crate::api::entities::Entities;
+pub use crate::api::foods::Foods;
+pub use crate::api::items::Items;
+pub use crate::api::loot::Loot;
+pub use crate::api::recipes::Recipes;
 use crate::models::version::Version;
 use crate::DataResult;
 use std::sync::Arc;
@@ -26,14 +25,6 @@ mod recipes;
 mod versions;
 
 use crate::api::protocol::Protocol;
-pub use biomes::*;
-pub use blocks::*;
-pub use enchantments::*;
-pub use entities::*;
-pub use foods::*;
-pub use items::*;
-pub use loot::*;
-pub use recipes::*;
 pub use versions::*;
 
 /// A type wrapping access to all the metadata
